@@ -1,0 +1,1896 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>РестоХаб — Закрытая библиотека ресторанной индустрии</title>
+  <meta name="description" content="РестоХаб — закрытая профессиональная библиотека стандартов HoReCa: экономика, управление, сервис, кухня, документы и инструменты." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            obsidian: { DEFAULT: '#171916', soft: '#1F221D', surface: '#222420' },
+            ivory: '#F3F0E8',
+            linen: '#EAE5D9',
+            stone: '#E3DDD0',
+            olive: '#62664B',
+            wine: { DEFAULT: '#552B2B', hover: '#6B3838' },
+            ink: { DEFAULT: '#171916', muted: '#58574F', subtle: '#848176' }
+          },
+          fontFamily: {
+            serif: ['"Cormorant Garamond"', 'Georgia', 'serif'],
+            sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif']
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    :root {
+      --obsidian: #171916;
+      --ivory: #F3F0E8;
+      --linen: #EAE5D9;
+      --stone: #E3DDD0;
+      --olive: #62664B;
+      --wine: #552B2B;
+      --ink-muted: #58574F;
+      --ink-subtle: #848176;
+      --hairline-light: rgba(23, 25, 22, 0.14);
+      --hairline-light-strong: rgba(23, 25, 22, 0.28);
+      --hairline-dark: rgba(243, 240, 232, 0.16);
+      --hairline-dark-strong: rgba(243, 240, 232, 0.34);
+      --ease-editorial: cubic-bezier(0.22, 1, 0.36, 1);
+      --ease-soft: cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    html { scroll-behavior: smooth; background-color: var(--ivory); color: var(--obsidian); }
+    body { background-color: var(--ivory); color: var(--obsidian); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; overflow-x: hidden; }
+    ::selection { background-color: var(--obsidian); color: var(--ivory); }
+    h1, h2, h3, h4, .font-editorial { font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 400; letter-spacing: -0.015em; }
+
+    .hairline-t { border-top: 1px solid var(--hairline-light); }
+    .hairline-b { border-bottom: 1px solid var(--hairline-light); }
+    .hairline-l { border-left: 1px solid var(--hairline-light); }
+    .hairline-r { border-right: 1px solid var(--hairline-light); }
+    .hairline-all { border: 1px solid var(--hairline-light); }
+    .hairline-strong { border: 1px solid var(--hairline-light-strong); }
+    .hairline-dark-t { border-top: 1px solid var(--hairline-dark); }
+    .hairline-dark-b { border-bottom: 1px solid var(--hairline-dark); }
+    .hairline-dark-l { border-left: 1px solid var(--hairline-dark); }
+    .hairline-dark-r { border-right: 1px solid var(--hairline-dark); }
+    .hairline-dark-all { border: 1px solid var(--hairline-dark); }
+
+    .nav-underline { position: relative; }
+    .nav-underline::after { content: ''; position: absolute; left: 0; right: 0; bottom: -4px; height: 1px; background-color: currentColor; transform: scaleX(0); transform-origin: left; transition: transform 0.35s var(--ease-editorial); }
+    .nav-underline:hover::after, .nav-underline.is-active::after { transform: scaleX(1); }
+
+    .editorial-link { position: relative; display: inline-flex; align-items: center; gap: 0.5rem; padding-bottom: 3px; }
+    .editorial-link::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background-color: currentColor; transform: scaleX(0.32); transform-origin: left; transition: transform 0.4s var(--ease-editorial); }
+    .editorial-link:hover::after { transform: scaleX(1); }
+
+    .photo-box { position: relative; overflow: hidden; background-color: #222420; }
+    .photo-box img { width: 100%; height: 100%; object-fit: cover; transition: transform 1.1s var(--ease-editorial), opacity 0.6s ease; will-change: transform; }
+    .photo-trigger:hover .photo-box img { transform: scale(1.035); }
+
+    /* Плавное появление обложки */
+    @keyframes coverSettle { from { opacity: 0; transform: scale(1.04); } to { opacity: 1; transform: scale(1); } }
+    .hero-photo-animate { animation: coverSettle 1.4s var(--ease-editorial) forwards; }
+
+    /* Переходы между видами SPA */
+    @keyframes viewFade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .view-transition { animation: viewFade 0.5s var(--ease-editorial) forwards; }
+
+    /* Модальные окна, тосты */
+    @keyframes modalReveal { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+    .modal-animate { animation: modalReveal 0.3s var(--ease-editorial) forwards; }
+    @keyframes toastReveal { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .toast-animate { animation: toastReveal 0.3s var(--ease-editorial) forwards; }
+
+    .faq-content { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.35s var(--ease-editorial); }
+    .faq-item[data-open="true"] .faq-content { grid-template-rows: 1fr; }
+
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 1px solid #62664B; outline-offset: 3px; }
+
+    /* Инструменты */
+    .tool-input { width: 100%; background: transparent; border: 0; border-bottom: 1px solid var(--hairline-light-strong); border-radius: 0; padding: 10px 0; font-size: 14px; color: var(--obsidian); font-family: 'Inter', sans-serif; }
+    .tool-input:focus { outline: none; border-bottom-color: var(--olive); }
+    .tool-input::placeholder { color: var(--ink-subtle); }
+    .tool-label { display: block; font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-subtle); margin-bottom: 2px; }
+    .tool-result { font-variant-numeric: tabular-nums; }
+    .tool-row { display: grid; grid-template-columns: 2fr 1fr 0.8fr 1fr auto; gap: 0.75rem; align-items: end; }
+    @media (max-width: 767px) { .tool-row { grid-template-columns: 1fr 1fr; } }
+
+    /* ========== АНИМАЦИИ (IntersectionObserver) ========== */
+    [data-reveal] {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.9s var(--ease-editorial), transform 0.9s var(--ease-editorial);
+      will-change: opacity, transform;
+    }
+    [data-reveal="image"] { transform: translateY(0) scale(0.985); }
+    [data-reveal="image"].is-revealed { transform: translateY(0) scale(1); }
+    [data-reveal].is-revealed { opacity: 1; transform: translateY(0); }
+    [data-reveal-delay="1"].is-revealed { transition-delay: 0.08s; }
+    [data-reveal-delay="2"].is-revealed { transition-delay: 0.16s; }
+    [data-reveal-delay="3"].is-revealed { transition-delay: 0.24s; }
+    [data-reveal-delay="4"].is-revealed { transition-delay: 0.32s; }
+    [data-reveal-delay="5"].is-revealed { transition-delay: 0.40s; }
+
+    /* Если JS отключён или сломан — показываем всё сразу */
+    html.no-js [data-reveal] { opacity: 1; transform: none; }
+
+    /* Деликатный параллелакс для фоновых фото */
+    .slow-drift img { animation: driftSlow 24s ease-in-out infinite alternate; }
+    @keyframes driftSlow { from { transform: scale(1.04) translate3d(0, 0, 0); } to { transform: scale(1.09) translate3d(0, -1.2%, 0); } }
+
+    /* ========== Пространство (полноэкранная навигация) ========== */
+    #space-overlay {
+      position: fixed; inset: 0; z-index: 60;
+      background: #14150F;
+      color: var(--ivory);
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.55s var(--ease-editorial), visibility 0s linear 0.55s;
+      overflow-y: auto;
+    }
+    #space-overlay.is-open {
+      opacity: 1;
+      visibility: visible;
+      transition: opacity 0.55s var(--ease-editorial), visibility 0s linear 0s;
+    }
+    #space-overlay::before {
+      content: '';
+      position: fixed; inset: 0;
+      background:
+        radial-gradient(1200px 800px at 20% 10%, rgba(98, 102, 75, 0.18), transparent 60%),
+        radial-gradient(900px 600px at 90% 90%, rgba(85, 43, 43, 0.16), transparent 60%);
+      pointer-events: none;
+    }
+    #space-overlay .space-head { position: relative; }
+    #space-overlay .space-body { position: relative; }
+    #space-overlay .space-foot { position: relative; }
+
+    .space-group { display: grid; grid-template-columns: 220px 1fr; gap: 3rem; padding: 2.6rem 0; border-top: 1px solid rgba(243, 240, 232, 0.14); }
+    .space-group:last-child { border-bottom: 1px solid rgba(243, 240, 232, 0.14); }
+    .space-group-title { font-family: 'Cormorant Garamond', serif; font-size: 13px; letter-spacing: 0.28em; text-transform: uppercase; color: rgba(243, 240, 232, 0.55); }
+    .space-item { display: flex; align-items: baseline; gap: 1rem; padding: 0.6rem 0; color: rgba(243, 240, 232, 0.72); transition: color 0.3s var(--ease-editorial), padding-left 0.4s var(--ease-editorial); cursor: pointer; text-align: left; width: 100%; }
+    .space-item:hover { color: #F3F0E8; padding-left: 6px; }
+    .space-item .num { font-size: 10px; letter-spacing: 0.18em; color: rgba(243, 240, 232, 0.36); min-width: 26px; }
+    .space-item .label { font-family: 'Cormorant Garamond', serif; font-size: 26px; line-height: 1.05; }
+    .space-item:hover .label { color: #F3F0E8; }
+    @media (max-width: 767px) {
+      .space-group { grid-template-columns: 1fr; gap: 0.5rem; padding: 1.8rem 0; }
+      .space-item .label { font-size: 22px; }
+    }
+
+    .space-stagger > * { opacity: 0; transform: translateY(14px); transition: opacity 0.6s var(--ease-editorial), transform 0.6s var(--ease-editorial); }
+    #space-overlay.is-open .space-stagger > * { opacity: 1; transform: translateY(0); }
+    #space-overlay.is-open .space-stagger > *:nth-child(1) { transition-delay: 0.05s; }
+    #space-overlay.is-open .space-stagger > *:nth-child(2) { transition-delay: 0.12s; }
+    #space-overlay.is-open .space-stagger > *:nth-child(3) { transition-delay: 0.19s; }
+    #space-overlay.is-open .space-stagger > *:nth-child(4) { transition-delay: 0.26s; }
+
+    /* Премиальный заголовок первого экрана */
+    .hero-display { font-family: 'Cormorant Garamond', serif; line-height: 0.94; letter-spacing: -0.02em; }
+    .hero-display .accent { font-style: italic; color: #D8A7A7; }
+    .hero-display .divider { display: inline-block; vertical-align: middle; width: 60px; height: 1px; background: currentColor; opacity: 0.5; margin: 0 1rem; }
+
+    /* Кнопка "Пространство" в шапке */
+    .space-btn { display: inline-flex; align-items: center; gap: 0.6rem; padding: 10px 16px; background: var(--obsidian); color: var(--ivory); font-size: 10.5px; letter-spacing: 0.18em; text-transform: uppercase; transition: background 0.3s var(--ease-editorial); }
+    .space-btn:hover { background: #2A2D26; }
+    .space-btn .dot { width: 6px; height: 6px; border-radius: 999px; background: #D8A7A7; }
+
+    /* Горизонтальная линия, оживающая при скролле */
+    .scroll-hairline { position: relative; }
+    .scroll-hairline::after { content: ''; position: absolute; left: 0; bottom: -1px; height: 1px; background: var(--olive); width: var(--scroll-progress, 0%); transition: width 0.2s linear; }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; scroll-behavior: auto !important; }
+      [data-reveal] { opacity: 1 !important; transform: none !important; }
+      .slow-drift img { animation: none !important; }
+      .hero-photo-animate { animation: none !important; opacity: 1 !important; transform: none !important; }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col bg-ivory text-obsidian">
+
+  <header id="site-header" class="sticky top-0 z-40 bg-ivory/95 backdrop-blur supports-[backdrop-filter]:bg-ivory/80 hairline-b">
+    <div class="max-w-[1440px] mx-auto px-5 sm:px-8 lg:px-12 h-[80px] flex items-center justify-between gap-4">
+      <button type="button" onclick="navigateTo('home')" class="text-left group flex items-baseline gap-3 shrink-0" aria-label="РестоХаб — На главную">
+        <span class="font-serif text-[25px] sm:text-[28px] font-medium tracking-[0.16em] uppercase leading-none text-obsidian group-hover:opacity-75 transition-opacity">РестоХаб</span>
+        <span class="hidden xl:inline-block text-[10px] uppercase tracking-[0.2em] text-ink-subtle pl-3 hairline-l">Клуб и библиотека HoReCa</span>
+      </button>
+
+      <nav class="hidden md:flex items-center gap-7" aria-label="Основная навигация">
+        <button type="button" data-nav="home" onclick="navigateTo('home')" class="nav-link nav-underline text-[10.5px] font-medium uppercase tracking-[0.16em] text-ink-muted hover:text-obsidian transition-colors">Главная</button>
+        <button type="button" data-nav="catalog" onclick="navigateTo('catalog')" class="nav-link nav-underline text-[10.5px] font-medium uppercase tracking-[0.16em] text-ink-muted hover:text-obsidian transition-colors">Библиотека</button>
+        <button type="button" data-nav="tools" onclick="navigateTo('tools')" class="nav-link nav-underline text-[10.5px] font-medium uppercase tracking-[0.16em] text-ink-muted hover:text-obsidian transition-colors">Практика</button>
+      </nav>
+
+      <div class="flex items-center gap-2 sm:gap-3">
+        <button type="button" onclick="openSpace()" class="space-btn" aria-label="Открыть пространство РестоХаб">
+          <span class="dot"></span>
+          <span>Пространство</span>
+          <svg class="w-4 h-2" viewBox="0 0 16 8" fill="none" stroke="currentColor" stroke-width="1.2"><line x1="0" y1="1" x2="16" y2="1"/><line x1="4" y1="7" x2="16" y2="7"/></svg>
+        </button>
+        <div id="header-actions" class="hidden md:flex items-center gap-3"></div>
+        <button type="button" onclick="openSpace()" class="md:hidden inline-flex items-center justify-center w-10 h-10 hairline-all text-obsidian" aria-label="Открыть меню">
+          <svg class="w-4 h-3" viewBox="0 0 20 12" fill="none" stroke="currentColor" stroke-width="1.2"><line x1="0" y1="2" x2="20" y2="2" /><line x1="5" y1="10" x2="20" y2="10" /></svg>
+        </button>
+      </div>
+    </div>
+    <div class="hairline-t"><div id="scroll-hairline-bar" class="scroll-hairline" style="height:1px"></div></div>
+  </header>
+
+  <!-- ПОЛНОЭКРАННЫЙ НАВИГАТОР "ПРОСТРАНСТВО" -->
+  <section id="space-overlay" aria-hidden="true" aria-label="Пространство РестоХаб">
+    <div class="space-head max-w-[1440px] w-full mx-auto px-5 sm:px-8 lg:px-12 pt-6 sm:pt-8 flex items-center justify-between gap-6">
+      <div class="flex items-baseline gap-3">
+        <span class="font-serif text-2xl tracking-[0.16em] uppercase">РестоХаб</span>
+        <span class="hidden sm:inline-block text-[10px] uppercase tracking-[0.22em] text-ivory/50 pl-3 border-l border-ivory/20">Пространство</span>
+      </div>
+      <button type="button" onclick="closeSpace()" class="text-[11px] uppercase tracking-[0.22em] text-ivory/70 hover:text-ivory flex items-center gap-2" aria-label="Закрыть">
+        <span>Закрыть</span>
+        <svg class="w-4 h-4" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2"><line x1="2" y1="2" x2="14" y2="14"/><line x1="14" y1="2" x2="2" y2="14"/></svg>
+      </button>
+    </div>
+
+    <div class="space-body max-w-[1440px] w-full mx-auto px-5 sm:px-8 lg:px-12 py-10 sm:py-14">
+      <div class="max-w-3xl mb-8 sm:mb-12 space-stagger">
+        <div class="text-[10px] uppercase tracking-[0.28em] text-ivory/55 mb-4">Все разделы клуба</div>
+        <h2 class="font-serif text-4xl sm:text-5xl lg:text-6xl leading-[0.96]">Одно <span class="italic" style="color:#D8A7A7">пространство</span> — вся практика ресторанной индустрии</h2>
+      </div>
+
+      <div class="space-group">
+        <div class="space-group-title">Знания</div>
+        <div class="space-stagger">
+          <button type="button" class="space-item" onclick="navigateFromSpace('catalog')"><span class="num">01</span><span class="label">Библиотека материалов</span></button>
+          <button type="button" class="space-item" onclick="navigateFromSpace('catalog')"><span class="num">02</span><span class="label">Статьи и инструкции</span></button>
+          <button type="button" class="space-item" onclick="navigateFromSpace('cases')"><span class="num">03</span><span class="label">Кейсы ресторанного бизнеса</span></button>
+          <button type="button" class="space-item" onclick="navigateFromSpace('experts')"><span class="num">04</span><span class="label">Эксперты и авторы</span></button>
+        </div>
+      </div>
+
+      <div class="space-group">
+        <div class="space-group-title">Практика</div>
+        <div class="space-stagger">
+          <button type="button" class="space-item" onclick="navigateFromSpace('tools')"><span class="num">05</span><span class="label">Финансовые калькуляторы</span></button>
+          <button type="button" class="space-item" onclick="navigateFromSpace('tools')"><span class="num">06</span><span class="label">Инструменты управления</span></button>
+          <button type="button" class="space-item" onclick="navigateFromSpace('checklists')"><span class="num">07</span><span class="label">Генератор чек-листов</span></button>
+        </div>
+      </div>
+
+      <div class="space-group">
+        <div class="space-group-title">Членство</div>
+        <div class="space-stagger">
+          <button type="button" class="space-item" onclick="navigateFromSpace('pricing')"><span class="num">08</span><span class="label">Тарифы и подписки</span></button>
+          <button type="button" class="space-item" onclick="navigateFromSpace('cabinet')"><span class="num">09</span><span class="label">Личный кабинет</span></button>
+          <button type="button" class="space-item" onclick="navigateFromSpace('about')"><span class="num">10</span><span class="label">О проекте</span></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="space-foot max-w-[1440px] w-full mx-auto px-5 sm:px-8 lg:px-12 pb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-[10.5px] uppercase tracking-[0.22em] text-ivory/45">
+      <div>© 2026 РестоХаб · Демонстрационное издание</div>
+      <div class="flex flex-wrap gap-6">
+        <button type="button" onclick="openModal('login'); closeSpace();" class="hover:text-ivory transition-colors">Вход</button>
+        <button type="button" onclick="openModal('register'); closeSpace();" class="hover:text-ivory transition-colors">Регистрация</button>
+        <button type="button" onclick="openDemoCheckout('PREMIUM'); closeSpace();" class="hover:text-ivory transition-colors">Демо-подписка</button>
+      </div>
+    </div>
+  </section>
+
+  <main id="app-root" class="flex-1"></main>
+
+  <footer class="bg-obsidian text-ivory hairline-dark-t">
+    <div class="max-w-[1440px] mx-auto px-5 sm:px-8 lg:px-12 pt-16 pb-10">
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-12 pb-14 hairline-dark-b">
+        <div class="md:col-span-5">
+          <div class="font-serif text-3xl tracking-[0.16em] uppercase mb-5">РестоХаб</div>
+          <p class="text-sm text-ivory/70 leading-relaxed max-w-sm font-light mb-6">Закрытый профессиональный клуб и библиотека стандартов высокой ресторанной индустрии: экономика, управление, сервис, кухня и правовой порядок.</p>
+          <div class="pl-4 border-l border-wine text-[11px] uppercase tracking-[0.16em] text-ivory/55 leading-relaxed">Демонстрационное издание · Платёжные сценарии и кабинеты работают в демо-режиме</div>
+        </div>
+        <div class="md:col-span-3">
+          <div class="text-[10px] uppercase tracking-[0.2em] text-ivory/50 mb-5">Навигация</div>
+          <ul class="space-y-3 text-sm text-ivory/75 font-light">
+            <li><button type="button" onclick="navigateTo('home')" class="hover:text-ivory transition-colors">Главная страница</button></li>
+            <li><button type="button" onclick="navigateTo('catalog')" class="hover:text-ivory transition-colors">Библиотека материалов</button></li>
+            <li><button type="button" onclick="navigateTo('cases')" class="hover:text-ivory transition-colors">Кейсы ресторанного бизнеса</button></li>
+            <li><button type="button" onclick="navigateTo('experts')" class="hover:text-ivory transition-colors">Эксперты и авторы</button></li>
+            <li><button type="button" onclick="navigateTo('tools')" class="hover:text-ivory transition-colors">Инструменты</button></li>
+            <li><button type="button" onclick="navigateTo('checklists')" class="hover:text-ivory transition-colors">Генератор чек-листов</button></li>
+            <li><button type="button" onclick="navigateTo('pricing')" class="hover:text-ivory transition-colors">Членство и тарифы</button></li>
+            <li><button type="button" onclick="navigateTo('about')" class="hover:text-ivory transition-colors">О клубе</button></li>
+            <li><button type="button" onclick="openDemoCabinetQuick()" class="hover:text-ivory transition-colors">Личный кабинет</button></li>
+          </ul>
+        </div>
+        <div class="md:col-span-4">
+          <div class="text-[10px] uppercase tracking-[0.2em] text-ivory/50 mb-5">Семь направлений библиотеки</div>
+          <ul id="footer-categories" class="space-y-2.5 text-sm text-ivory/75 font-light"></ul>
+        </div>
+      </div>
+      <div class="pt-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-xs text-ivory/45">
+        <div>© 2026 РестоХаб. Закрытая профессиональная библиотека HoReCa.</div>
+        <div class="flex flex-wrap items-center gap-6">
+          <button type="button" onclick="openModal('login')" class="hover:text-ivory transition-colors">Вход</button>
+          <button type="button" onclick="openModal('register')" class="hover:text-ivory transition-colors">Регистрация</button>
+          <button type="button" onclick="openDemoCheckout('PREMIUM')" class="hover:text-ivory transition-colors">Демо-подписка</button>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <div id="modal-backdrop" onclick="handleModalBackdropClick(event)" class="fixed inset-0 z-[70] hidden items-center justify-center p-4 sm:p-6 bg-obsidian/75" role="dialog" aria-modal="true">
+    <div id="modal-container" class="w-full max-w-[520px]"></div>
+  </div>
+
+  <div id="toast-container" class="fixed bottom-6 right-6 z-[80] flex flex-col gap-2.5 max-w-sm w-[calc(100vw-3rem)] pointer-events-none"></div>
+
+  <script>
+    'use strict';
+
+    /* ============ 1. ДАННЫЕ ============ */
+    const HERO_ASSETS = {
+      cover: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=2000&q=85',
+      philosophy: 'https://images.unsplash.com/photo-1577219491135-ce391730fb2c?auto=format&fit=crop&w=1600&q=85',
+      tools: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=1600&q=85',
+      invitation: 'https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?auto=format&fit=crop&w=2000&q=85',
+      editorial: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1600&q=85'
+    };
+
+    const CATEGORIES = [
+      { num: '01', id: 'Управление рестораном', short: 'Управление', desc: 'Операционные ритмы, аудит смен и дашборды управляющего', preview: 'https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?auto=format&fit=crop&w=1400&q=85', caption: 'Архитектура утреннего контроля и ритм высокой посадки' },
+      { num: '02', id: 'Персонал и HR', short: 'Персонал и HR', desc: 'Найм, адаптация, мотивация и удержание команды', preview: 'https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=1400&q=85', caption: 'Наставничество, прозрачная система KPI и культура уважения' },
+      { num: '03', id: 'Финансы и экономика', short: 'Финансы', desc: 'Фудкост, P&L-отчётность, ценообразование и ABC-XYZ анализ', preview: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1400&q=85', caption: 'Точность управленческого учёта и инженерия рентабельности меню' },
+      { num: '04', id: 'Сервис и обслуживание', short: 'Сервис', desc: 'Стандарты гостеприимства, допродажи и работа с отзывами', preview: 'https://images.unsplash.com/photo-1592861956120-e524fc739696?auto=format&fit=crop&w=1400&q=85', caption: 'Хореография стола, тайминг курсов и дипломатия в зале' },
+      { num: '05', id: 'Маркетинг и продвижение', short: 'Маркетинг', desc: 'Локальный трафик, возвращаемость и программы лояльности', preview: 'https://images.unsplash.com/photo-1537047902294-62a40c20a6ae?auto=format&fit=crop&w=1400&q=85', caption: 'Комьюнити вокруг дома, геосервисы и возвращаемость гостей' },
+      { num: '06', id: 'Кухня и производство', short: 'Кухня', desc: 'ХАССП, заготовочный цех, скорость отдачи и списания', preview: 'https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&w=1400&q=85', caption: 'Дисциплина mise en place, пищевая безопасность и темп отдачи' },
+      { num: '07', id: 'Документы и регламенты', short: 'Документы', desc: 'Должностные инструкции, журналы и чек-листы проверок', preview: 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=1400&q=85', caption: 'Правовая гигиена, должностные стандарты и папка проверяющего' }
+    ];
+
+    const ACCESS_RANK = { FREE: 0, PRO: 1, PREMIUM: 2 };
+
+    const PLANS = {
+      FREE: { id: 'FREE', name: 'FREE', label: 'Открытое собрание', price: 0, priceLabel: '0 ₽', period: 'навсегда', tagline: 'Для знакомства с редакцией, структурой библиотеки и базовыми стандартами', features: ['Доступ к ограниченной части базы знаний', 'Просмотр бесплатных материалов и базовых инструкций', 'Сохранение материалов в личной библиотеке', 'Поиск и фильтрация по всем семи направлениям'] },
+      PRO: { id: 'PRO', name: 'PRO', label: 'Операционный контур', price: 990, priceLabel: '990 ₽', period: 'в месяц', tagline: 'Оптимальный формат для управляющих, администраторов и шеф-поваров', features: ['Расширенный доступ к библиотеке (FREE + PRO)', 'Интерактивные чек-листы смен, допродаж и ХАССП', 'Рабочие шаблоны документов (P&L, матрица KPI, CRM)', 'Регулярные обновления операционных стандартов'] },
+      PREMIUM: { id: 'PREMIUM', name: 'PREMIUM', label: 'Полное членство', price: 1990, priceLabel: '1 990 ₽', period: 'в месяц', tagline: 'Для владельцев ресторанных групп, инвесторов и системного масштабирования', features: ['Полный доступ ко всем 18 материалам без ограничений', 'Все финансовые модели, ABC-XYZ и предсезонные аудиты', 'Полный комплект журналов для проверок Роспотребнадзора', 'Максимальный набор досье, протоколов и шаблонов'] }
+    };
+
+    const MATERIALS = [
+      { id: 1, title: 'Ежедневный дашборд управляющего: 12 ключевых метрик смены', category: 'Управление рестораном', type: 'Статья', access: 'FREE', readTime: 7, date: '2026-11-12', dateLabel: '12 ноября 2026', popularity: 98, author: 'Редакция РестоХаб · Операционный совет', image: 'https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?auto=format&fit=crop&w=1400&q=85', photoCaption: 'Утренняя тишина в зале до открытия — время сверки ключевых цифр смены.', tags: ['дашборд', 'метрики', 'управляющий', 'выручка', 'средний чек'], description: 'Как собрать утренний 10-минутный отчёт, который показывает здоровье ресторана до начала рабочего дня и предотвращает кассовые разрывы.', sections: [
+        { heading: 'Зачем управляющему ежедневный срез вместо месячного отчёта', paragraphs: ['Большинство операционных проблем в ресторане видны в итоговом P&L слишком поздно — когда месяц уже закрыт, а маржа потеряна. Ежедневный дашборд переводит управление из режима «тушения пожаров» в режим ранней диагностики.', 'Правильно выстроенная панель занимает не более одного экрана и обновляется за 10 минут утром на основе выгрузки из кассовой системы (iiko / r_keeper).'] },
+        { heading: 'Три блока обязательных показателей (12 метрик)', paragraphs: ['Разделите ежедневный отчёт на три смысловых контура, чтобы не терять фокус на деталях:'], list: ['Выручка и трафик: фактическая выручка vs план (%), количество чеков, количество гостей, средний чек на гостя, наполняемость чека (позиций в чеке).', 'Операционная эффективность: себестоимость по продажам (теоретический фудкост), % ФОТ от выручки за смену, доля списаний и порчи, сумма отмен и удалений после пречека.', 'Качество и скорость: среднее время отдачи горячих блюд в пик, среднее время отдачи бара, индекс удовлетворённости / количество инцидентов в зале.'] },
+        { heading: 'Регламент реакции на отклонения («светофор»)', paragraphs: ['Для каждой метрики задайте коридор нормы. Если показатель попадает в «жёлтую» зону (отклонение 3–5%), менеджер смены пишет краткий комментарий в чате управления. При попадании в «красную» зону (более 5%) проводится разбор на пятиминутке перед открытием.'] }
+      ], expertTip: 'Не перегружайте утренний дашборд десятками графиков. Управляющий должен считывать состояние смены за 90 секунд. Особое внимание уделяйте «удалениям после печати пречека» — это главный индикатор либо слабой дисциплины, либо злоупотреблений на кассе.', attachments: [{ name: 'Шаблон_Ежедневный_дашборд_управляющего.xlsx', format: 'XLSX', size: '148 КБ', demoContent: 'Дата;План выручки;Факт выручки;Выполнение %;Гостей;Средний чек;ФОТ %;Списания %;Удаления после пречека;Время отдачи пик (мин)\n2026-11-20;320000;334500;104.5%;218;1534;21.2%;1.4%;0;16\n2026-11-21;410000;398200;97.1%;254;1567;22.8%;1.9%;2400;21' }] },
+      { id: 2, title: 'Чек-лист открытия и закрытия ресторана для менеджера смены', category: 'Управление рестораном', type: 'Чек-лист', access: 'PRO', readTime: 6, date: '2026-11-15', dateLabel: '15 ноября 2026', popularity: 95, author: 'Редакция РестоХаб · Операционный совет', image: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1400&q=85', photoCaption: 'Безупречная сервировка и подготовка зала за 45 минут до первых гостей.', tags: ['чек-лист', 'открытие', 'закрытие', 'менеджер', 'смена'], description: 'Пошаговый контрольный лист менеджера смены: от проверки кассы, стоп-листа и внешнего вида команды до безопасного закрытия зала и инкассации.', sections: [{ heading: 'Принцип нулевого пропуска на старте смены', paragraphs: ['90% сбоев в вечернюю посадку закладываются за час до открытия. Если менеджер полагается на память, мелкие недочёты — разряженный терминал, неактуальный стоп-лист, сбитая музыка или нехватка размена — превращаются в стресс для команды и негатив гостей.', 'Используйте интерактивный чек-лист ниже во время обхода зала за 45 минут до открытия и после ухода последнего гостя.'] }], checklist: ['Проверена чистота входной группы, вывески и остекления', 'Включены климат-контроль (21–22 °C), сценарный свет и плейлист дня', 'Сверены остатки разменных купюр в кассе и заряд банковских терминалов', 'Получен актуальный стоп-лист и лист приоритетных продаж от шеф-повара и бар-менеджера', 'Проведён пятиминутный брифинг команды: проверка формы, бейджей и резервов дня', 'Проверено состояние гостевых санузлов и наличие всех расходников', 'При закрытии: снят Z-отчёт, сверен эквайринг, выполнена инкассация в сейф', 'Отключено тепловое оборудование кухни (кроме холодильных контуров) и поставлена сигнализация'], expertTip: 'Заведите правило фотоотчёта по 3 критическим точкам за 15 минут до открытия: барная стойка, гостевой санузел и сервированный зал. Это дисциплинирует менеджеров сильнее любых штрафов.', attachments: [{ name: 'Чек-лист_Открытие_Закрытие_Смены.pdf', format: 'PDF', size: '215 КБ', demoContent: 'РЕСТОХАБ — ЧЕК-ЛИСТ ОТКРЫТИЯ И ЗАКРЫТИЯ РЕСТОРАНА\n\nБЛОК 1. ЗА 45 МИНУТ ДО ОТКРЫТИЯ:\n[ ] Входная группа и гардероб чистые\n[ ] Температура в зале 21-22C, музыка соответствует времени суток\n[ ] Касса, эквайринг, фискальный накопитель проверены\n[ ] Стоп-лист внесён в POS-систему\n[ ] Брифинг команды проведён\n\nБЛОК 2. ЗАКРЫТИЕ СМЕНЫ:\n[ ] Закрыты все столы, снят Z-отчёт\n[ ] Сверка безналичных оплат выполнена без расхождений\n[ ] Холодильники закрыты, температурные листы заполнены\n[ ] Сигнализация активирована' }] },
+      { id: 3, title: 'Операционный аудит заведения перед высоким сезоном', category: 'Управление рестораном', type: 'Инструкция', access: 'PREMIUM', readTime: 12, date: '2026-11-18', dateLabel: '18 ноября 2026', popularity: 89, author: 'Редакция РестоХаб · Операционный совет', image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1400&q=85', photoCaption: 'Проверка узких мест зала, посуды и логистики за 30 дней до пиковых нагрузок.', tags: ['аудит', 'высокий сезон', 'масштабирование', 'операционка'], description: 'Комплексная методика стресс-тестирования ресторана за 30 дней до пиковых нагрузок: мощность кухни, графики, поставщики, резервный фонд и IT-инфраструктура.', sections: [
+        { heading: 'Этап 1. Аудит пропускной способности (Bottle-neck анализ)', paragraphs: ['В высокий сезон ресторан теряет выручку не из-за нехватки гостей, а из-за узких горлышек: нехватки посуды, перегруженного холодного цеха или долгого расчёта столов.', 'Проведите замер пиковой пятницы: зафиксируйте время оборота стола, загрузку каждого цеха и количество отказов по бронированию.'], list: ['Инвентаризация посуды и стекла с резервом +25% от максимальной посадки.', 'Тест оборудования: профилактика пароконвектоматов, льдогенераторов, вытяжки и посудомоечной машины.', 'Проверка резервного канала интернета (4G/LTE роутер для бесперебойного эквайринга).'] },
+        { heading: 'Этап 2. Цепочка поставок и матрица дублёров', paragraphs: ['Для топ-30 ключевых продуктов (формирующих 80% выручки) в системе должен быть утверждён резервный поставщик с предварительно согласованными ценами и логистическим плечом до 24 часов.'] },
+        { heading: 'Этап 3. Кадровый резерв и графики усиления', paragraphs: ['Сформируйте пул «усиливающих смен» (4–5 часов в пик) для раннеров, мойщиков и заготовщиков. Вывод неполных смен снижает перегрев ФОТ на 2–3 п.п. при сохранении скорости обслуживания.'] }
+      ], expertTip: 'Проводите предсезонный аудит минимум за 4 недели до пика. Главный секрет спокойного декабря или летней веранды — заранее отремонтированный льдогенератор и 2 дополнительных комплекта пикового стекла на складе.', attachments: [
+        { name: 'Карта_Операционного_Аудита_60_пунктов.xlsx', format: 'XLSX', size: '310 КБ', demoContent: 'Раздел;Пункт аудита;Ответственный;Статус;Срок устранения\nТехника;Сервисное ТО пароконвектомата;Шеф-повар;В работе;За 21 день\nЗал;Проверка запаса стекла +25%;Бар-менеджер;Выполнено;За 14 дней\nIT;Тест резервного LTE-канала кассы;Управляющий;Запланировано;За 10 дней' },
+        { name: 'План_подготовки_к_пиковому_сезону.docx', format: 'DOCX', size: '190 КБ', demoContent: 'ДОРОЖНАЯ КАРТА ПОДГОТОВКИ РЕСТОРАНА К ВЫСОКОМУ СЕЗОНУ (30 ДНЕЙ)\nНеделя 1: Технический аудит и резервные поставщики.\nНеделя 2: Добор усиливающего персонала и обучение меню.\nНеделя 3: Тестирование пиковых заготовок и ревизия посуды.\nНеделя 4: Генеральный прогон в пятничную посадку.' }
+      ] },
+      { id: 4, title: 'Система адаптации официанта за 14 дней: пошаговый план', category: 'Персонал и HR', type: 'Инструкция', access: 'FREE', readTime: 8, date: '2026-11-10', dateLabel: '10 ноября 2026', popularity: 94, author: 'Елена Громова · Сервис и культура', image: 'https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=1400&q=85', photoCaption: 'Первые две недели формируют почерк сотрудника зала и его верность дому.', tags: ['адаптация', 'официант', 'онбординг', 'обучение', 'наставник'], description: 'Структурированный маршрут ввода нового сотрудника зала в работу: от первого дня стажировки и сдачи меню до самостоятельной станции без стресса.', sections: [
+        { heading: 'Почему новички уходят в первые две недели', paragraphs: ['По статистике HoReCa, до 45% увольнений линейного персонала происходят в первые 14 дней. Причина почти всегда одна: сотрудника «бросают в зал» без понятного плана, наставника и промежуточной обратной связи.'] },
+        { heading: 'План ввода по этапам (Дни 1–14)', paragraphs: ['Разбейте стажировку на 4 контролируемых спринта с чёткими критериями перехода:'], list: ['Дни 1–3 (Погружение): экскурсия, знакомство с философией заведения, работа в паре с наставником в роли раннера, изучение нумерации столов и посуды.', 'Дни 4–7 (Меню и сервис): дегустация ключевых блюд и барной карты, изучение аллергенов и составов, работа с POS-терминалом в учебном режиме.', 'Дни 8–11 (Теневые смены): самостоятельное ведение 2–3 столов под мягким контролем наставника, отработка алгоритма допродаж.', 'Дни 12–14 (Аттестация): устный и практический зачёт по меню и стандартам, беседа с управляющим, перевод в основной штат.'] }
+      ], expertTip: 'Назначайте наставнику фиксированную доплату (например, 3 000–5 000 ₽) не за сам факт стажировки, а по факту успешной аттестации новичка и отработки им первого полного месяца. Качество обучения вырастет мгновенно.', attachments: [{ name: 'Маршрутный_лист_стажёра_14_дней.docx', format: 'DOCX', size: '164 КБ', demoContent: 'МАРШРУТНЫЙ ЛИСТ СТАЖЁРА ЗАЛА (14 ДНЕЙ)\nФИО стажёра: _______________\nНаставник: _________________\nЭтап 1 (Дни 1-3): Стандарты формы, расстановка столов, раннерство.\nЭтап 2 (Дни 4-7): Знание меню кухни и бара, работа с iiko.\nЭтап 3 (Дни 8-11): Самостоятельное ведение 3 столов.\nЭтап 4 (Дни 12-14): Итоговая аттестация управляющим.' }] },
+      { id: 5, title: 'Матрица мотивации и KPI для команды зала и кухни', category: 'Персонал и HR', type: 'Шаблон документа', access: 'PRO', readTime: 9, date: '2026-11-14', dateLabel: '14 ноября 2026', popularity: 92, author: 'Михаил Соколов · Финансовая практика', image: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1400&q=85', photoCaption: 'Синхронизация целей собственника, зала и кухни через прозрачную систему KPI.', tags: ['мотивация', 'KPI', 'зарплата', 'бонусы', 'управляющий', 'шеф'], description: 'Готовая система расчёта переменной части дохода для управляющего, шеф-повара, администраторов и официантов с привязкой к прибыли и качеству.', sections: [
+        { heading: 'Главный принцип справедливой мотивации', paragraphs: ['Сотрудник должен влиять минимум на 80% метрик, от которых зависит его премия. Если привязать премию шеф-повара только к общей выручке без учёта фудкоста и списаний, кухня потеряет интерес к экономике. Если привязать только к фудкосту — пострадает размер порций.'] },
+        { heading: 'Рекомендуемые веса KPI по должностям', paragraphs: ['Сбалансированная матрица соединяет финансовые и качественные показатели:'], list: ['Управляющий: 40% выполнение плана по чистой прибыли (EBITDA), 30% соблюдение коридора ФОТ, 30% индекс качества (тайный гость и рейтинг на картах).', 'Шеф-повар: 35% удержание целевого фудкоста, 35% результаты инвентаризации и списания в норме, 30% скорость отдачи и прохождение аудита ХАССП.', 'Администратор зала: 50% выполнение плана выручки и среднего чека, 30% чек-листы смен без замечаний, 20% дисциплина графика и адаптация стажёров.', 'Официант: оклад + % от личных продаж (либо бонус за выполнение плана по фокусным категориям: десерты, вино, авторские напитки) + прозрачная система чаевых.'] }
+      ], expertTip: 'Сделайте расчёт бонусов максимально прозрачным: каждый сотрудник зала и менеджер должен понимать на середину месяца, сколько процентов от плана выполнено и что именно нужно сделать до конца месяца для получения максимальной премии.', attachments: [{ name: 'Матрица_KPI_Зал_и_Кухня_2026.xlsx', format: 'XLSX', size: '245 КБ', demoContent: 'Должность;Показатель KPI;Вес %;Целевое значение;Порог отсечения\nУправляющий;Выполнение EBITDA;40%;>=100%;92%\nУправляющий;ФОТ % от выручки;30%;<=23%;25%\nУправляющий;Рейтинг на картах;30%;>=4.8;4.6\nШеф-повар;Фудкост;35%;<=27%;29%\nШеф-повар;Списания и порча;35%;<=1.5%;2.2%\nШеф-повар;Аудит ХАССП;30%;>=95%;88%' }] },
+      { id: 6, title: 'Снижение текучести линейного персонала: системный подход', category: 'Персонал и HR', type: 'Статья', access: 'PREMIUM', readTime: 11, date: '2026-11-19', dateLabel: '19 ноября 2026', popularity: 87, author: 'Елена Громова · Сервис и культура', image: 'https://images.unsplash.com/photo-1600565193348-f74bd3c7ccdf?auto=format&fit=crop&w=1400&q=85', photoCaption: 'Устойчивые команды в гастрономии строятся на уважении, грейдах и предсказуемости.', tags: ['текучесть', 'удержание', 'HR', 'команда', 'eNPS'], description: 'Как сократить текучесть официантов и поваров в 2 раза за полгода: диагностика причин, культура фидбека, грейды, стафф-питание и прогнозирование выгорания.', sections: [
+        { heading: 'Реальная стоимость потери одного сотрудника', paragraphs: ['Уход одного обученного повара-универсала или опытного официанта обходится ресторану от 45 000 до 85 000 ₽: затраты на рекрутинг, время менеджеров на собеседования, оплата стажировочных смен и скрытые потери выручки из-за снижения скорости и среднего чека.'] },
+        { heading: 'Пять системных рычагов удержания команды', paragraphs: ['Деньги — лишь гигиенический фактор. После выравнивания ставок с рынком решающую роль играют предсказуемость и уважение:'], list: ['Предсказуемый график: публикация расписания минимум за 10 дней до начала месяца и уважение к заявленным выходным.', 'Прозрачная сетка грейдов: официант 1-й, 2-й и 3-й категории (с понятным ростом ставки после аттестации каждые 4–6 месяцев).', 'Качественное питание персонала и комфортная раздевалка — прямой сигнал отношения собственника к команде.', 'Короткие 1-on-1 встречи (15 минут раз в месяц) и ежеквартальный анонимный опрос eNPS.', 'Корректные Exit-интервью: фиксируйте истинные причины ухода для системных изменений.'] }
+      ], expertTip: 'Запустите правило «30 и 60 дней»: управляющий лично пьёт кофе с каждым новым сотрудником на 30-й и 60-й день работы и задаёт два вопроса: «Что тебе нравится в команде?» и «Что мешает работать ещё лучше?». Это снижает раннюю текучесть на 35%.', attachments: [{ name: 'Анкета_eNPS_и_Exit_интервью.docx', format: 'DOCX', size: '132 КБ', demoContent: 'ОПРОСНИК УДОВЛЕТВОРЁННОСТИ КОМАНДЫ (eNPS)\n1. Готовы ли вы рекомендовать наш ресторан друзьям как место работы (0-10)?\n2. Понятны ли вам стандарты и правила начисления дохода?\n3. Удобен ли текущий формат составления графика?\n4. Что одно вы бы улучшили в работе смены в первую очередь?' }] },
+      { id: 7, title: 'Контроль фудкоста и списаний без потери качества блюд', category: 'Финансы и экономика', type: 'Статья', access: 'FREE', readTime: 8, date: '2026-11-11', dateLabel: '11 ноября 2026', popularity: 97, author: 'Михаил Соколов · Финансовая практика', image: 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=1400&q=85', photoCaption: 'Точность граммовок и работа с первичным сырьём на кухне определяют маржу блюда.', tags: ['фудкост', 'списания', 'инвентаризация', 'техкарты', 'кухня'], description: 'Пошаговая система удержания себестоимости в целевом коридоре 25–28%: контроль приёмки, ревизия техкарт, работа с отходами и циклическая инвентаризация.', sections: [
+        { heading: 'Разница между теоретическим и фактическим фудкостом', paragraphs: ['Теоретический фудкост рассчитывается строго по технологическим картам. Фактический отражает реальное списание продуктов со склада за период. Если разрыв между ними превышает 1,5–2%, ресторан системно теряет деньги на кухне или приёмке.'] },
+        { heading: 'Четыре главные точки утечки маржи', paragraphs: ['Прежде чем менять поставщика на более дешёвого, проверьте внутренние процессы:'], list: ['Приёмка товара: взвешивание каждой накладной без тары, контроль процента глазури в морепродуктах и калибра овощей.', 'Устаревшие техкарты: фактический процент отхода при зачистке мяса и рыбы часто отличается от расчётного на 5–12%.', 'Отсутствие весов на раздаче: «перевес» порции дорогого белка всего на 15 г съедает до 4% маржи блюда.', 'Неучтённые проработки, питание персонала и комплименты гостям — всё должно пробиваться отдельными статьями списания.'] }
+      ], expertTip: 'Внедрите еженедельную мини-инвентаризацию по 15 самым дорогим позициям (мясо, рыба, сыры, крепкий алкоголь). Она занимает 35 минут в понедельник утром и позволяет поймать перерасход до того, как он станет критическим.', attachments: [{ name: 'Бланк_Еженедельной_ревизии_ТОП15.xlsx', format: 'XLSX', size: '118 КБ', demoContent: 'Позиция;Ед.изм;Учётный остаток;Фактический остаток;Отклонение;Цена за ед.;Сумма отклонения\nВырезка говяжья;кг;14.5;13.9;-0.6;1850;-1110\nЛосось охлаждённый;кг;11.2;11.1;-0.1;1620;-162\nСыр Пармезан;кг;4.8;4.5;-0.3;2100;-630' }] },
+      { id: 8, title: 'Финансовая модель и шаблон P&L (ОПиУ) для ресторана', category: 'Финансы и экономика', type: 'Шаблон документа', access: 'PRO', readTime: 10, date: '2026-11-16', dateLabel: '16 ноября 2026', popularity: 99, author: 'Михаил Соколов · Финансовая практика', image: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1400&q=85', photoCaption: 'Управленческая отчётность методом начисления — главный инструмент финансового директора.', tags: ['P&L', 'ОПиУ', 'финансовая модель', 'EBITDA', 'прибыль', 'бюджет'], description: 'Профессиональная структура отчёта о прибылях и убытках с бенчмарками HoReCa по каждой статье расходов и формулами расчёта точки безубыточности.', sections: [
+        { heading: 'Классическая структура ресторанного P&L', paragraphs: ['Грамотный отчёт о прибылях и убытках (ОПиУ) ведётся методом начисления, а не кассовым методом. Это позволяет видеть реальную операционную прибыль месяца без искажений от авансов за аренду или квартальных закупок.'], list: ['Выручка (нетто, за вычетом скидок и НДС): кухня, бар, доставка, банкеты.', 'Себестоимость (COGS): целевой ориентир 25–29% (кухня 26–30%, бар 20–24%).', 'ФОТ с налогами (Labor Cost): целевой ориентир 22–26% от выручки.', 'Prime Cost (COGS + Labor): золотое правило — сумма не должна превышать 52–55%.', 'Аренда и коммунальные расходы: оптимально 8–12% (включая эксплуатацию).', 'Прочие операционные расходы (маркетинг, эквайринг, хознужды, IT, прачка): 8–11%.', 'Операционная прибыль (EBITDA): здоровый ориентир успешного ресторана 18–25%.'] },
+        { heading: 'Как работать с отчётом ежемесячно', paragraphs: ['Закрывайте управленческий P&L не позднее 7-го числа следующего месяца. Сравнивайте каждую статью в трёх разрезах: факт текущего месяца, план (бюджет) и факт аналогичного месяца прошлого года (YoY).'] }
+      ], expertTip: 'Никогда не объединяйте в одной строке «Хозрасходы» всё подряд. Выделите отдельно эквайринг, доставку/агрегаторы, упаковку, бой посуды и ремонт оборудования — именно в этих статьях обычно прячутся лишние 3–4% от выручки.', attachments: [
+        { name: 'Шаблон_PnL_Ресторан_2026.xlsx', format: 'XLSX', size: '340 КБ', demoContent: 'Статья P&L;План (руб);Факт (руб);% от выручки;Бенчмарк\nВыручка нетто;9500000;9850000;100.0%;100%\nСебестоимость (COGS);2565000;2610250;26.5%;25-29%\nФОТ с налогами;2280000;2314750;23.5%;22-26%\nАренда и КУ;950000;950000;9.6%;8-12%\nМаркетинг;285000;295500;3.0%;2-4%\nХознужды и сервис;665000;689500;7.0%;6-8%\nЭквайринг и IT;237500;246250;2.5%;2-3%\nEBITDA;2517500;2743750;27.9%;18-25%' },
+        { name: 'Инструкция_по_заполнению_ОПиУ.pdf', format: 'PDF', size: '175 КБ', demoContent: 'ПАМЯТКА ПО ВЕДЕНИЮ УПРАВЛЕНЧЕСКОГО P&L\n1. Используйте метод начисления.\n2. Разделяйте выручку зала, бара и доставки.\n3. Контролируйте Prime Cost (COGS + ФОТ <= 55%).\n4. Закрывайте отчёт до 7-го числа каждого месяца.' }
+      ] },
+      { id: 9, title: 'ABC-XYZ анализ меню: как увеличить маржу на 6–9%', category: 'Финансы и экономика', type: 'Инструкция', access: 'PREMIUM', readTime: 13, date: '2026-11-20', dateLabel: '20 ноября 2026', popularity: 93, author: 'Михаил Соколов · Финансовая практика', image: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1400&q=85', photoCaption: 'Меню-инжиниринг соединяет замысел шефа с математикой абсолютной маржи.', tags: ['меню-инжиниринг', 'ABC-анализ', 'маржа', 'ценообразование'], description: 'Практическое руководство по меню-инжинирингу: классификация блюд на «Звёзд», «Лошадок», «Загадок» и «Собак» с точным планом корректировки цен и рецептур.', sections: [
+        { heading: 'Зачем совмещать маржинальность и популярность', paragraphs: ['Высокая наценка в процентах не всегда приносит деньги в кассу. Чашка чая может иметь наценку 700% и приносить 280 ₽ маржи, а стейк с наценкой 180% приносит 1 400 ₽. Меню-инжиниринг оценивает блюда одновременно по количеству продаж (ABC) и абсолютной марже (в рублях), а XYZ показывает стабильность спроса.'] },
+        { heading: 'Четыре квадранта матрицы и действия по каждому', paragraphs: ['Разделите все блюда внутри одной категории (например, отдельно горячие, отдельно закуски):'], list: ['«Звёзды» (высокие продажи + высокая маржа): флагманы меню. Не меняйте рецептуру, визуально выделяйте в меню, тестируйте аккуратное повышение цены на 3–5%.', '«Рабочие лошадки» (высокие продажи + низкая маржа): генераторы трафика. Оптимизируйте закупку или гарнир, предлагайте к ним высокомаржинальные допы и соусы.', '«Загадки» (низкие продажи + высокая маржа): скрытый резерв прибыли. Перепишите название и описание в меню, обучите официантов рекомендациям, обновите подачу.', '«Собаки» (низкие продажи + низкая маржа): кандидаты на вывод. Удалите из меню, чтобы сократить товарный остаток и списания.'] }
+      ], expertTip: 'Никогда не сравнивайте в одной таблице ABC-анализа салаты, стейки и десерты — у них разная природа спроса и средний чек. Проводите анализ строго внутри каждой товарной категории раз в квартал.', attachments: [{ name: 'Калькулятор_ABC_XYZ_анализа_меню.xlsx', format: 'XLSX', size: '295 КБ', demoContent: 'Блюдо;Категория;Продано шт;Цена;Себестоимость;Маржа руб;Класс популярности;Класс маржи;Решение\nТартар из говядины;Закуски;410;890;240;650;Высокая;Высокая;ЗВЕЗДА — сохранить и подсветить\nБрускетта с томатами;Закуски;480;490;165;325;Высокая;Низкая;ЛОШАДКА — поднять цену до 540\nПаштет с трюфелем;Закуски;95;760;180;580;Низкая;Высокая;ЗАГАДКА — включить в рекомендации\nСалат с сельдереем;Закуски;32;520;210;310;Низкая;Низкая;СОБАКА — вывести из меню' }] },
+      { id: 10, title: 'Стандарты гостеприимства: 7 этапов обслуживания стола', category: 'Сервис и обслуживание', type: 'Инструкция', access: 'FREE', readTime: 7, date: '2026-11-09', dateLabel: '9 ноября 2026', popularity: 91, author: 'Елена Громова · Сервис и культура', image: 'https://images.unsplash.com/photo-1592861956120-e524fc739696?auto=format&fit=crop&w=1400&q=85', photoCaption: 'Тайминг курсов и естественная забота формируют чувство исключительного комфорта.', tags: ['сервис', 'стандарты', 'гостеприимство', 'тайминг', 'официант'], description: 'Единый эталон сервиса в зале с точными временными нормативами: от приветствия за 30 секунд и презентации меню до тёплого прощания.', sections: [
+        { heading: 'Тайминг как основа комфорта гостя', paragraphs: ['Гость оценивает качество сервиса интуитивно — по ощущению заботы и отсутствию неловких пауз. Чёткие временные нормативы снимают напряжение и с гостя, и с официанта.'], list: ['Этап 1. Встреча и посадка (до 30 секунд): зрительный контакт, искренняя улыбка, помощь с верхней одеждой, предложение выбора стола.', 'Этап 2. Приветствие и меню (до 2 минут): подача меню в открытом виде, предложение аперитива или воды, информирование о спецпредложениях.', 'Этап 3. Приём заказа (3–5 минут): активное слушание, уточнение аллергий, порядка подачи курсов, обязательное повторение заказа.', 'Этап 4. Подача напитков и блюд: напитки до 5–7 минут, холодные закуски 10–12 минут, горячее 18–25 минут. Соблюдение правила «правой руки» и подачи дамам в первую очередь.', 'Этап 5. Проверка качества (правило 2 минут / 2 укусов): ненавязчивый вопрос «Как вам вкус блюда?» после первых минут трапезы.', 'Этап 6. Десерт, дижестив и расчёт (пречек до 3 минут): своевременная уборка чистой/грязной посуды, предложение десерта и кофе.', 'Этап 7. Прощание: искренняя благодарность, помощь с одеждой и приглашение вернуться.'] }
+      ], expertTip: 'Замените шаблонный вопрос «Вам всё понравилось?» на более живые формулировки: «Как прожарка стейка?», «Удачно ли подошло вино к тартару?». Гости охотнее дают честную обратную связь, и вы успеваете исправить недочёт до ухода.', attachments: [{ name: 'Памятка_7_этапов_сервиса_и_тайминги.pdf', format: 'PDF', size: '154 КБ', demoContent: 'СТАНДАРТ ОБСЛУЖИВАНИЯ СТОЛА — РЕСТОХАБ\n1. Встреча: <= 30 сек\n2. Подача меню и предложение воды: <= 2 мин\n3. Приём заказа + повторение: 3-5 мин\n4. Напитки: <= 7 мин | Холодные блюда: <= 12 мин | Горячее: <= 25 мин\n5. Контроль качества: через 2 минуты после подачи\n6. Расчёт и сдача/терминал: <= 3 мин\n7. Прощание с улыбкой и приглашением вернуться' }] },
+      { id: 11, title: 'Чек-лист и скрипты деликатных допродаж для официантов', category: 'Сервис и обслуживание', type: 'Чек-лист', access: 'PRO', readTime: 6, date: '2026-11-13', dateLabel: '13 ноября 2026', popularity: 90, author: 'Елена Громова · Сервис и культура', image: 'https://images.unsplash.com/photo-1528823872057-9c018a7a7553?auto=format&fit=crop&w=1400&q=85', photoCaption: 'Винное сопровождение и гастрономическая рекомендация увеличивают чек без нажима.', tags: ['допродажи', 'средний чек', 'скрипты', 'официант', 'чек-лист'], description: 'Как поднять средний чек на 12–18% без навязчивости: техника «заботливой рекомендации», триггерные точки заказа и готовые речевые модули.', sections: [
+        { heading: 'Почему прямые продажи не работают в премиальном и среднем сегменте', paragraphs: ['Фраза «Что-нибудь ещё?» или «Будете десерт?» почти всегда получает автоматический отказ «Нет, спасибо». Деликатная допродажа строится на гастрономическом сочетании и конкретном образе блюда — вы помогаете гостю получить больше удовольствия от визита.'] },
+        { heading: 'Примеры работающих речевых формул', paragraphs: ['Сравните закрытый вопрос с экспертной рекомендацией:'], list: ['На старте: «Пока вы выбираете блюда, могу принести освежающий домашний лимонад с юдзу или бокал сухого просекко для аппетита?»', 'К основному блюду: «К утиной грудке наш шеф рекомендует соус из вишни и лёгкий гарнир из печёного батата — они идеально балансируют вкус. Добавить к заказу?»', 'После горячего: «У нас сегодня только испекли тёплый тарт с грушей и ванильным мороженым, он отлично сочетается с эспрессо или травяным чаем — принести на двоих?»'] }
+      ], checklist: ['На брифинге определены 2 фокусных блюда кухни и 2 позиции бара на смену', 'Предложен аперитив или вода в первые 2 минуты после посадки', 'Использован выбор без выбора (2 конкретных варианта вместо «будете пить?»)', 'Предложено гастрономическое дополнение (соус, гарнир, бокал вина) к основному блюду', 'При опустошении бокала на 2/3 мягко предложено повторить напиток', 'После уборки горячих тарелок презентован конкретный десерт или авторский чай'], expertTip: 'Раз в неделю проводите с официантами 15-минутные «дегустационные пятиминутки» по 2 позициям из меню. Официант уверенно и вкусно продаёт только то блюдо, которое пробовал сам.', attachments: [{ name: 'Карточки_скриптов_деликатных_допродаж.docx', format: 'DOCX', size: '142 КБ', demoContent: 'СКРИПТЫ ДЕЛИКАТНЫХ ДОПРОДАЖ (РЕСТОХАБ)\n1. Аперитив: Предлагайте конкретную пару — вода с газом/без + 1 авторский напиток.\n2. Закуска в стол: "Пока готовится горячее (20 мин), принести тёплую фокаччу с взбитым маслом в стол?"\n3. Вино: Рекомендуйте по стилю вкуса (свежее минеральное / насыщенное ягодное).\n4. Финал: "Могу приготовить фирменный десерт — его удобно разделить на двоих".' }] },
+      { id: 12, title: 'Управление конфликтными ситуациями и отзывами по протоколу LAST', category: 'Сервис и обслуживание', type: 'Статья', access: 'PREMIUM', readTime: 9, date: '2026-11-17', dateLabel: '17 ноября 2026', popularity: 88, author: 'Елена Громова · Сервис и культура', image: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=1400&q=85', photoCaption: 'Достоинство и скорость разрешения сложной ситуации у стола сохраняют доверие гостей.', tags: ['конфликты', 'отзывы', 'LAST', 'лояльность', 'менеджер'], description: 'Пошаговый алгоритм превращения недовольного гостя в адвоката бренда: матрица полномочий менеджера, деэскалация в зале и регламент ответов на негатив в картах.', sections: [
+        { heading: 'Протокол LAST: четыре шага в критический момент', paragraphs: ['В стрессовой ситуации линейный персонал часто начинает оправдываться, что усиливает конфликт. Протокол LAST даёт чёткую опору:'], list: ['L — Listen (Выслушайте): не перебивайте, сохраняйте спокойную позу, дайте гостю высказаться полностью.', 'A — Apologize (Извинитесь искренне): «Мне искренне жаль, что блюдо не оправдало ваших ожиданий и испортило впечатление от вечера». Без фразы «но у нас сегодня полная посадка».', 'S — Solve (Решите немедленно): предложите замену блюда, удаление позиции из счёта или комплимент от шефа в рамках бюджета полномочий менеджера.', 'T — Thank (Поблагодарите): «Спасибо, что сказали нам об этом сейчас — для нас важно исправлять ошибки сразу».'] },
+        { heading: 'Бюджет полномочий менеджера смены (Empowerment)', paragraphs: ['Выделите менеджеру смены лимит самостоятельных решений (например, до 3 000 ₽ на инцидент без согласования с собственником). Скорость решения конфликта прямо за столом на 80% снижает вероятность публикации негативного отзыва на Яндекс Картах и 2ГИС.'] }
+      ], expertTip: 'Отвечайте на любой негативный отзыв на геосервисах в течение 12 часов. Не используйте канцелярские шаблоны «Ваше обращение передано руководству». Обращайтесь по имени, признавайте факт и оставляйте прямой контакт управляющего для личного приглашения.', attachments: [{ name: 'Регламент_LAST_и_шаблоны_ответов_на_отзывы.docx', format: 'DOCX', size: '188 КБ', demoContent: 'ПРОТОКОЛ РАБОТЫ С КОНФЛИКТАМИ LAST\nУровень 1 (Официант): Замена напитка / подогрев блюда — немедленно.\nУровень 2 (Менеджер): Комплимент десерт/напиток или удаление блюда из чека до 3000 руб.\nУровень 3 (Управляющий): Личный звонок гостю и приглашение на повторный визит.\n\nШАБЛОН ОТВЕТА НА ОТЗЫВ:\n"Анна, добрый день! Меня зовут Алексей, я управляющий ресторана. Спасибо, что подробно описали ситуацию..."' }] },
+      { id: 13, title: 'Локальный маркетинг ресторана: привлечение гостей в радиусе 2 км', category: 'Маркетинг и продвижение', type: 'Статья', access: 'FREE', readTime: 8, date: '2026-11-08', dateLabel: '8 ноября 2026', popularity: 86, author: 'Анна Лебедева · Бренд и комьюнити', image: 'https://images.unsplash.com/photo-1537047902294-62a40c20a6ae?auto=format&fit=crop&w=1400&q=85', photoCaption: 'Локальное окружение ресторана обеспечивает наиболее стабильную посадку в будни.', tags: ['маркетинг', 'геосервисы', 'Яндекс Карты', 'локальный трафик'], description: 'Самые окупаемые каналы привлечения гостей без раздутого рекламного бюджета: упаковка геосервисов, партнёрства с соседями и работа с бизнес-центрами.', sections: [
+        { heading: 'Почему 70% постоянных гостей живут или работают в 15 минутах от вас', paragraphs: ['Прежде чем запускать дорогую таргетированную рекламу на весь город, выстройте плотный локальный маркетинг. Гость из соседнего ЖК или бизнес-центра возвращается в 4–6 раз чаще, чем случайный посетитель из другого района.'] },
+        { heading: 'Топ-4 инструмента локального привлечения с максимальным ROI', paragraphs: ['Сфокусируйтесь на точках контакта с горячим спросом:'], list: ['Идеальные карточки на Яндекс Картах и 2ГИС: свежие аппетитные фото блюд и интерьера, актуальное меню с ценами, заполненные сторис, кнопка онлайн-бронирования и рейтинг от 4.8+.', 'Кросс-маркетинг с неконкурирующими соседями: салоны красоты, фитнес-клубы, барбершопы, премиальные клиники и бутики в радиусе 1 км (обмен сертификатами на приветственный бокал или десерт).', 'Корпоративные программы для соседних офисов: спецпредложения на деловые обеды, быстрый предзаказ и скидка на командные дни рождения.', 'Визуальная привлекательность входной группы: читаемое меню у входа, тёплый свет, сезонный декор и чистота — это ваш бесплатный билборд 24/7.'] }
+      ], expertTip: 'Установите на столах аккуратные тейбл-тенты с QR-кодом, ведущим на короткую форму оценки визита: оценки 5★ автоматически перенаправляются на Яндекс Карты, а оценки 1–4★ мгновенно приходят в Telegram управляющему.', attachments: [{ name: 'Чек-лист_упаковки_Яндекс_Карт_и_2ГИС.pdf', format: 'PDF', size: '162 КБ', demoContent: 'ЧЕК-ЛИСТ ГЕОСЕРВИСОВ РЕСТОРАНА\n[ ] Загружено 20+ профессиональных фото (фасад, зал, топ-блюда)\n[ ] Меню с актуальными ценами и фото загружено в прайс-лист\n[ ] Настроена кнопка прямого бронирования стола\n[ ] Заполнены все атрибуты (парковка, детское меню, веранда, Wi-Fi)\n[ ] 100% отзывов получают ответ в течение 24 часов' }] },
+      { id: 14, title: 'Архитектура программы лояльности и календарь инфоповодов', category: 'Маркетинг и продвижение', type: 'Шаблон документа', access: 'PRO', readTime: 9, date: '2026-11-15', dateLabel: '15 ноября 2026', popularity: 85, author: 'Анна Лебедева · Бренд и комьюнити', image: 'https://images.unsplash.com/photo-1551218808-94e220e084d2?auto=format&fit=crop&w=1400&q=85', photoCaption: 'Сезонные гастрономические ужины и продуманная CRM заменяют обесценивающие скидки.', tags: ['лояльность', 'CRM', 'бонусы', 'календарь', 'возвращаемость'], description: 'Как перейти от убыточных скидок к накопительной бонусной системе, сегментировать базу гостей (RFM) и распланировать события ресторана на 12 месяцев.', sections: [
+        { heading: 'Почему бонусы в 2,5 раза выгоднее прямых скидок', paragraphs: ['Прямая скидка 10% сразу вычитается из вашей чистой прибыли. Бонусный кэшбэк 10% работает иначе: гость должен вернуться, чтобы потратить баллы, причём оплачивает ими не более 20–30% следующего чека. Фактическая стоимость такой программы для ресторана составляет всего 2,5–3,5% от выручки.'] },
+        { heading: 'Обязательные автоматические триггеры CRM', paragraphs: ['Настройте 4 базовых сценария коммуникации (Wallet-карты / SMS / мессенджеры):'], list: ['Приветственные баллы сразу после первого визита (срок действия 30 дней для стимуляции второго прихода).', 'Поздравление с днём рождения за 5 дней до даты (повышенный кэшбэк или комплимент на компанию).', 'Сценарий реактивации «спящих гостей» — персональное приглашение через 45 дней отсутствия.', 'Закрытые ужины и дегустации нового меню для топ-10% гостей (VIP-сегмент).'] }
+      ], expertTip: 'Не сжигайте базу частыми рассылками. Оптимальная частота касаний — 1–2 сообщения в месяц с реальной гастрономической ценностью (сезонное меню, винный ужин, персональный подарок), а не сухие акции «-15% во вторник».', attachments: [{ name: 'Годовой_календарь_инфоповодов_HoReCa.xlsx', format: 'XLSX', size: '220 КБ', demoContent: 'Месяц;Ключевой инфоповод;Формат активности;Целевой сегмент\nЯнварь;Зимнее согревающее меню;Дегустация настоек и сытных блюд;Постоянные гости\nФевраль;14 и 23 февраля;Сет-меню на двоих + предзаказ;Пары и компании\nМарт;Весеннее обновление и Постное меню;Спецвкладыш + рассылка;Все гости\nМай;Открытие летней веранды;Закрытый превью-вечер для VIP;Топ-10% базы' }] },
+      { id: 15, title: 'Чек-лист ежедневного контроля ХАССП и товарного соседства', category: 'Кухня и производство', type: 'Чек-лист', access: 'PRO', readTime: 7, date: '2026-11-17', dateLabel: '17 ноября 2026', popularity: 96, author: 'Дмитрий Воронов · Кухня и производство', image: 'https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&w=1400&q=85', photoCaption: 'Температурная дисциплина и маркировка заготовок — основа безопасности и стабильности вкуса.', tags: ['ХАССП', 'СанПиН', 'кухня', 'маркировка', 'безопасность'], description: 'Ежедневный контрольный лист для шеф-повара и су-шефа: температурные режимы, маркировка заготовок, цветовое кодирование досок и санитарный контроль.', sections: [
+        { heading: 'Пищевая безопасность как часть репутации бренда', paragraphs: ['Система ХАССП нужна не «для галочки проверяющему», а для гарантированной безопасности гостей и стабильного вкуса каждого блюда. 10-минутный утренний обход су-шефа полностью исключает риски просроченных заготовок и перекрёстного загрязнения.'] }
+      ], checklist: ['Заполнены журналы температурного режима всех холодильных и морозильных камер (утро/вечер)', 'Проверен гигиенический журнал осмотра сотрудников кухни (отсутствие порезов и признаков ОРВИ)', '100% заготовок и вскрытых упаковок имеют маркировку (наименование, дата/час изготовления, срок годности, ФИО)', 'Соблюдено товарное соседство: сырьё строго отдельно от готовой продукции и полуфабрикатов', 'Цветовая кодировка разделочных досок и ножей соблюдается по всем цехам', 'Проверена свежесть фритюрного масла и заполнен журнал его замены', 'Дезинфицирующие растворы разведены по инструкции, уборочный инвентарь промаркирован'], expertTip: 'Перейдите на термопринтер маркировочных стикеров (с водорастворимым клеем). Повара перестают тратить время на подписи от руки, наклейки легко смываются в посудомойке, а дисциплина маркировки достигает 98%.', attachments: [{ name: 'Чек-лист_ХАССП_ежедневный_контроль.pdf', format: 'PDF', size: '198 КБ', demoContent: 'ЕЖЕДНЕВНЫЙ ЧЕК-ЛИСТ ХАССП (РЕСТОХАБ)\n1. Температуры: Холодильники +2..+6C | Морозильники -18C и ниже.\n2. Здоровье персонала: Журнал осмотра заполнен до начала смены.\n3. Маркировка: Дата + Время + Срок реализации + Исполнитель на каждом гастроёмкости.\n4. Товарное соседство: Исключён контакт сырого мяса/рыбы с готовыми блюдами.\n5. Санитария: Станции обработаны, графики генеральной уборки соблюдены.' }] },
+      { id: 16, title: 'Оптимизация заготовочного цеха и ускорение отдачи в пиковые часы', category: 'Кухня и производство', type: 'Инструкция', access: 'PREMIUM', readTime: 11, date: '2026-11-21', dateLabel: '21 ноября 2026', popularity: 89, author: 'Дмитрий Воронов · Кухня и производство', image: 'https://images.unsplash.com/photo-1577219491135-ce391730fb2c?auto=format&fit=crop&w=1400&q=85', photoCaption: 'Чёткая организация mise en place и работа экспедитора в разгар пятничного сервиса.', tags: ['заготовки', 'отдача', 'пиковые часы', 'кухня', 'станция'], description: 'Как сократить время отдачи горячих блюд в пятничный пик с 32 до 16 минут без расширения штата: система Par-levels, mise en place и эргономика станций.', sections: [
+        { heading: 'Система нормативных остатков заготовок (Par-Levels)', paragraphs: ['Главная причина заторов на кухне вечером — окончание базовых полуфабрикатов (соусов, бульонов, порционированного белка) в разгар посадки. Внедрите таблицу Par-levels с разделением на будние дни и выходные (Пт–Вс), рассчитанную на основе истории продаж за последние 4 недели.'] },
+        { heading: 'Правило вытянутой руки и перебалансировка меню', paragraphs: ['Проведите хронометраж работы каждого повара в час пик и устраните лишние перемещения:'], list: ['Эргономика станции: 80% используемых ингредиентов и посуды должны находиться на расстоянии одного шага без пересечения потоков поваров.', 'Технологии пред-приготовления (су-вид, шоковая заморозка, вакуумирование): доводите длительные позиции до 85% готовности заранее, оставляя на отдачу 4–6 минут.', 'Балансировка нагрузки между цехами: перераспределите часть гарниров или тёплых закусок с перегруженного горячего цеха на холодный или пекарский.', 'Чёткая роль экспедитора (шефа на раздаче): один человек управляет курсами, проверяет презентацию и координирует раннеров.'] }
+      ], expertTip: 'Замеряйте в системе учёта не только среднее время отдачи, но и «90-й перцентиль» (сколько ждут 10% самых долгих чеков). Именно эти 10% задержек формируют основную массу негативных отзывов о кухне.', attachments: [{ name: 'Бланк_Par_Levels_заготовочный_лист.xlsx', format: 'XLSX', size: '176 КБ', demoContent: 'Полуфабрикат;Цех;Норма Будни;Норма Выходные;Остаток утро;Задание в работу\nСоус Демиглас (л);Горячий;4;7;2;5\nВырезка порционная 180г (шт);Мясной;25;45;10;35\nТесто на фокаччу (шары);Пекарский;30;55;15;40' }] },
+      { id: 17, title: 'Должностная инструкция администратора зала: актуальный образец', category: 'Документы и регламенты', type: 'Шаблон документа', access: 'FREE', readTime: 6, date: '2026-11-07', dateLabel: '7 ноября 2026', popularity: 92, author: 'Правовая практика РестоХаб', image: 'https://images.unsplash.com/photo-1466637574441-749b8f19452f?auto=format&fit=crop&w=1400&q=85', photoCaption: 'Ясные зоны ответственности превращают должностную инструкцию в рабочий стандарт.', tags: ['должностная инструкция', 'администратор', 'регламент', 'документы'], description: 'Готовый юридически выверенный и практичный шаблон должностной инструкции администратора ресторана с зоной ответственности, правами и критериями оценки.', sections: [
+        { heading: 'Зачем переписывать формальную инструкцию под реальную смену', paragraphs: ['Типовые инструкции из интернета не работают в зале, потому что не фиксируют реальные обязанности: ведение резервов, контроль кассовой дисциплины, обучение стажёров и урегулирование конфликтов. Грамотный документ служит одновременно договором ожиданий и базой для аттестации.'] },
+        { heading: 'Ключевые разделы шаблона', paragraphs: ['Документ структурирован так, чтобы его можно было внедрить за один день:'], list: ['Общие положения и подчинённость (кому подчиняется и кем руководит в смене).', 'Операционные обязанности до открытия, во время сервиса и при закрытии.', 'Финансовая и кассовая ответственность (инкассация, возвраты, сторнирование).', 'Полномочия по решению конфликтных ситуаций и управлению графиком зала.', 'Лист ознакомления с подписью сотрудника.'] }
+      ], expertTip: 'Выдавайте должностную инструкцию на ознакомление в первый день работы вместе с чек-листом смены и проговаривайте каждый пункт вслух — так сотрудник сразу понимает, за какой результат он отвечает.', attachments: [{ name: 'Должностная_инструкция_Администратора_зала.docx', format: 'DOCX', size: '158 КБ', demoContent: 'УТВЕРЖДАЮ: Генеральный директор ООО "Ресторан"\nДОЛЖНОСТНАЯ ИНСТРУКЦИЯ АДМИНИСТРАТОРА ЗАЛА\n\n1. ОБЩИЕ ПОЛОЖЕНИЯ\nАдминистратор зала отвечает за бесперебойную работу смены, высокий уровень сервиса и выполнение плановых показателей.\n\n2. ОСНОВНЫЕ ОБЯЗАННОСТИ\n2.1. Открытие и закрытие зала по утверждённому чек-листу.\n2.2. Проведение предсменных брифингов и контроль внешнего вида персонала.\n2.3. Координация посадки, бронирований и взаимодействия зала с кухней.\n2.4. Контроль кассовой дисциплины и корректности расчётов.\n2.5. Оперативное урегулирование претензий гостей по протоколу LAST.' }] },
+      { id: 18, title: 'Полный пакет журналов и регламентов для проверки Роспотребнадзора', category: 'Документы и регламенты', type: 'Шаблон документа', access: 'PREMIUM', readTime: 14, date: '2026-11-22', dateLabel: '22 ноября 2026', popularity: 94, author: 'Правовая практика РестоХаб', image: 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=1400&q=85', photoCaption: 'Безупречный порядок в журналах и санитарной документации даёт спокойствие при любой проверке.', tags: ['Роспотребнадзор', 'проверка', 'журналы', 'ППК', 'СанПиН'], description: 'Актуальный комплект обязательной документации предприятия общественного питания: перечень журналов, программа производственного контроля и памятка действий при визите инспектора.', sections: [
+        { heading: 'Уголок потребителя и обязательная папка администратора', paragraphs: ['Большинство штрафов при плановых и внеплановых проверках выписываются не за грубые нарушения, а за отсутствие или незаполненные строки в обязательных журналах. Вся документация должна храниться в одной структурированной папке в доступе у менеджера смены.'], list: ['Программа производственного контроля (ППК) и актуальные протоколы лабораторных смывов.', 'Договоры на дератизацию, дезинсекцию, вывоз ТКО и утилизацию отработанного масла и люминесцентных ламп.', 'Личные медицинские книжки всех сотрудников смены с действующей аттестацией и прививками.', 'Журналы: гигиенический (здоровья), бракеража готовой продукции, учёта температурного режима холодильников, учёта фритюрных жиров, проведения генеральных уборок и учёта дезсредств.'] },
+        { heading: 'Алгоритм действий менеджера при визите проверяющего', paragraphs: ['Сохраняйте спокойствие и доброжелательный деловой тон. Зафиксируйте удостоверение и распоряжение на проверку, немедленно уведомите управляющего и юриста, сопровождайте инспектора на каждом этапе и фиксируйте замечания в журнале учёта проверок.'] }
+      ], expertTip: 'Назначьте в календаре автоматическое напоминание 1-го числа каждого месяца: «Аудит папки проверяющего» (15 минут). Проверяйте сроки медкнижек, акты дезинсекции и заполнение всех журналов за прошедший месяц.', attachments: [
+        { name: 'Комплект_Журналов_Роспотребнадзор_2026.docx', format: 'DOCX', size: '412 КБ', demoContent: 'ПЕРЕЧЕНЬ ОБЯЗАТЕЛЬНЫХ ЖУРНАЛОВ ОБЩЕПИТА (РЕСТОХАБ)\n1. Гигиенический журнал (сотрудники)\n2. Журнал учёта температурного режима холодильного оборудования\n3. Журнал учёта температуры и влажности складских помещений\n4. Журнал бракеража готовой пищевой продукции\n5. Журнал учёта фритюрных жиров\n6. Журнал проведения генеральных уборок\n7. Журнал учёта дезинфицирующих средств' },
+        { name: 'Памятка_Менеджеру_при_проверке.pdf', format: 'PDF', size: '185 КБ', demoContent: 'ПАМЯТКА: ПОРЯДОК ДЕЙСТВИЙ ПРИ ВИЗИТЕ ПРОВЕРЯЮЩЕГО\nШаг 1: Вежливо представиться, проверить служебное удостоверение и решение о проверке.\nШаг 2: Сообщить управляющему/собственнику.\nШаг 3: Предоставить папку с документами и журналы.\nШаг 4: Сопровождать инспектора, не препятствовать работе.\nШаг 5: Внимательно прочитать акт перед подписанием, при несогласии внести замечания.' }
+      ] }
+    ];
+
+    const EXPERT_SPECIALIZATIONS = ['Все', 'Управление ресторанами', 'Финансы и экономика', 'Маркетинг и продвижение', 'Шеф-поварское дело', 'Персонал и HR', 'Сервис и гостеприимство', 'Автоматизация ресторанов'];
+
+    const EXPERTS = [
+      { id: 1, name: 'Алексей Романов', role: 'Управление ресторанами · операционный аудит', specializations: ['Управление ресторанами'], photo: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=900&q=85', bio: 'Редакционный пример. Демонстрационный профиль эксперта по операционному управлению: ритмы смены, дашборды управляющего, предсезонные аудиты и масштабирование ресторанных групп.', competencies: ['Операционные ритмы', 'Аудит смены', 'Подготовка к высокому сезону', 'Масштабирование'], publications: [1, 2, 3], editorialNote: 'Редакционный пример. Профиль создан для демонстрации структуры раздела и не является реальной биографией.' },
+      { id: 2, name: 'Михаил Соколов', role: 'Финансы и экономика · управленческий учёт', specializations: ['Финансы и экономика'], photo: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=900&q=85', bio: 'Редакционный профиль автора проекта. Специализация: P&L, фудкост, меню-инжиниринг, ABC-XYZ анализ и финансовая модель ресторана.', competencies: ['P&L и ОПиУ', 'Фудкост и списания', 'ABC-XYZ анализ', 'Ценообразование'], publications: [5, 7, 8, 9], editorialNote: 'Профиль автора проекта; биография носит редакционный демонстрационный характер.' },
+      { id: 3, name: 'Анна Лебедева', role: 'Маркетинг и продвижение · бренд и комьюнити', specializations: ['Маркетинг и продвижение'], photo: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=900&q=85', bio: 'Редакционный профиль автора проекта. Специализация: локальный маркетинг, геосервисы, программы лояльности и календарь инфоповодов.', competencies: ['Локальный маркетинг', 'Геосервисы', 'Программы лояльности', 'CRM-триггеры'], publications: [13, 14], editorialNote: 'Профиль автора проекта; биография носит редакционный демонстрационный характер.' },
+      { id: 4, name: 'Дмитрий Воронов', role: 'Шеф-поварское дело · кухня и производство', specializations: ['Шеф-поварское дело'], photo: 'https://images.unsplash.com/photo-1583394838336-acd977736f90?auto=format&fit=crop&w=900&q=85', bio: 'Редакционный профиль автора проекта. Специализация: ХАССП, заготовочный цех, Par-levels, скорость отдачи и эргономика кухонных станций.', competencies: ['ХАССП', 'Заготовки и Par-levels', 'Скорость отдачи', 'Эргономика кухни'], publications: [15, 16], editorialNote: 'Профиль автора проекта; биография носит редакционный демонстрационный характер.' },
+      { id: 5, name: 'Елена Громова', role: 'Персонал и HR · сервис и гостеприимство', specializations: ['Персонал и HR', 'Сервис и гостеприимство'], photo: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=900&q=85', bio: 'Редакционный профиль автора проекта. Специализация: адаптация персонала, стандарты сервиса, мотивация команды, деликатные допродажи и работа с конфликтами.', competencies: ['Онбординг', 'Стандарты сервиса', 'Допродажи', 'Протокол LAST'], publications: [4, 6, 10, 11, 12], editorialNote: 'Профиль автора проекта; биография носит редакционный демонстрационный характер.' },
+      { id: 6, name: 'Илья Ковалёв', role: 'Автоматизация ресторанов · POS и учётные системы', specializations: ['Автоматизация ресторанов'], photo: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=900&q=85', bio: 'Редакционный пример. Демонстрационный профиль по автоматизации: связка POS, складского учёта, дашбордов и CRM без раздувания IT-бюджета.', competencies: ['POS и складской учёт', 'Дашборды', 'CRM-автоматизация', 'IT-контур ресторана'], publications: [1, 8, 15], editorialNote: 'Редакционный пример. Профиль создан для демонстрации структуры раздела и не является реальной биографией.' }
+    ];
+
+    const CASES = [
+      { id: 1, title: 'Сокращение времени отдачи горячих блюд с 32 до 16 минут', sector: 'Сеть из 4 ресторанов · Москва', metric: '−50% времени отдачи', summary: 'Редакционный пример: перестройка заготовочного цеха, внедрение Par-levels и перебалансировка меню сократили время отдачи горячего в пятничный пик.', image: 'https://images.unsplash.com/photo-1577219491135-ce391730fb2c?auto=format&fit=crop&w=1400&q=85', related: [16] },
+      { id: 2, title: 'Удержание фудкоста в коридоре 26–28% без смены поставщиков', sector: 'Городской ресторан · Санкт-Петербург', metric: '−1,8 п.п. к фудкосту', summary: 'Редакционный пример: контроль приёмки, ревизия техкарт и еженедельная мини-инвентаризация ТОП-15 позиций удержали себестоимость в целевом коридоре.', image: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1400&q=85', related: [7] },
+      { id: 3, title: 'Снижение текучести линейного персонала на 35% за 2 квартала', sector: 'Ресторанный холдинг · Казань', metric: '−35% текучести', summary: 'Редакционный пример: грейды, предсказуемый график, встречи 1-on-1 и регулярный опрос eNPS стабилизировали команду зала и кухни.', image: 'https://images.unsplash.com/photo-1600565193348-f74bd3c7ccdf?auto=format&fit=crop&w=1400&q=85', related: [6] }
+    ];
+
+    /* ============ 2. СОСТОЯНИЕ ============ */
+    const AppState = {
+      currentView: 'home',
+      selectedArticleId: null,
+      selectedCaseId: null,
+      selectedExpertId: null,
+      activeListId: null,
+      userLists: [],
+      cabinetTab: 'sections',
+      expertFilter: 'Все',
+      filters: { search: '', category: 'ALL', type: 'ALL', access: 'ALL', sort: 'popularity' },
+      user: { isAuthenticated: false, name: 'Гость', email: '', role: 'Гостевой режим', plan: 'FREE', autoRenew: true, nextBillingDate: '22 декабря 2026' },
+      savedIds: [1, 8, 15],
+      checklistState: { 2: { 0: true, 1: true }, 15: { 0: true } },
+      paymentHistory: [
+        { id: 'DEMO-2026-1022', date: '22 октября 2026', plan: 'PRO', amount: '990 ₽', status: 'Подтверждено (демо)' },
+        { id: 'DEMO-2026-0922', date: '22 сентября 2026', plan: 'PRO', amount: '990 ₽', status: 'Подтверждено (демо)' }
+      ],
+      pendingUnlockArticleId: null,
+      pendingCheckoutPlan: 'PRO',
+      tl: {
+        foodcost: { dish: '', price: '', target: '30', rows: [{ n: '', q: '', u: 'г', p: '' }] },
+        breakeven: { fixed: '', check: '', varPct: '30', days: '30' },
+        labor: { payroll: '', revenue: '', target: '25' },
+        revenue: { seats: '', turns: '', occ: '', check: '', days: '30' }
+      }
+    };
+
+    /* ============ 3. УТИЛИТЫ ============ */
+    function escapeHtml(str) {
+      if (typeof str !== 'string') return '';
+      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+    }
+    function hasAccess(requiredLevel) { return ACCESS_RANK[AppState.user.plan] >= ACCESS_RANK[requiredLevel]; }
+    function getAccessMarkHtml(access, onDark = false) {
+      if (access === 'FREE') return `<span class="text-[10px] font-medium uppercase tracking-[0.18em] ${onDark ? 'text-ivory/65' : 'text-olive'}">FREE</span>`;
+      if (access === 'PRO') return `<span class="text-[10px] font-medium uppercase tracking-[0.18em] ${onDark ? 'text-ivory/90' : 'text-obsidian'}">PRO</span>`;
+      return `<span class="text-[10px] font-medium uppercase tracking-[0.18em] ${onDark ? 'text-[#D8A7A7]' : 'text-wine'}">PREMIUM</span>`;
+    }
+    function getPluralMaterials(count) {
+      const mod10 = count % 10, mod100 = count % 100;
+      if (mod10 === 1 && mod100 !== 11) return `${count} материал`;
+      if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) return `${count} материала`;
+      return `${count} материалов`;
+    }
+    function showToast(message, accent = 'olive') {
+      const container = document.getElementById('toast-container');
+      if (!container) return;
+      const el = document.createElement('div');
+      const borderColor = accent === 'wine' ? 'border-l-wine' : 'border-l-olive';
+      el.className = `toast-animate pointer-events-auto bg-obsidian text-ivory px-5 py-3.5 rounded-[2px] hairline-dark-all border-l-2 ${borderColor} text-xs leading-relaxed tracking-wide`;
+      el.textContent = message;
+      container.appendChild(el);
+      setTimeout(() => {
+        el.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+        el.style.opacity = '0'; el.style.transform = 'translateY(8px)';
+        setTimeout(() => el.remove(), 320);
+      }, 3400);
+    }
+
+    const STORAGE_KEY = 'restohub.library.v1';
+    function persistLibrary() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+          savedIds: AppState.savedIds,
+          checklistState: AppState.checklistState,
+          userLists: AppState.userLists,
+          tl: AppState.tl || null
+        }));
+      } catch (err) { console.error('localStorage write failed:', err); }
+    }
+    function loadPersistedLibrary() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return;
+        const data = JSON.parse(raw);
+        if (Array.isArray(data.savedIds)) {
+          AppState.savedIds = data.savedIds.map(id => Number(id)).filter(id => MATERIALS.some(m => m.id === id));
+        }
+        if (data.checklistState && typeof data.checklistState === 'object') {
+          const next = {};
+          Object.keys(data.checklistState).forEach(key => {
+            const id = Number(key);
+            if (!MATERIALS.some(m => m.id === id)) return;
+            const src = data.checklistState[key];
+            if (!src || typeof src !== 'object') return;
+            next[id] = {};
+            Object.keys(src).forEach(idx => { next[id][idx] = !!src[idx]; });
+          });
+          AppState.checklistState = next;
+        }
+        if (Array.isArray(data.userLists)) {
+          AppState.userLists = data.userLists.filter(list => list && typeof list.id === 'string').map(list => ({
+            id: String(list.id).slice(0, 40),
+            title: String(list.title || 'Без названия').slice(0, 140),
+            items: Array.isArray(list.items) ? list.items.filter(item => item && typeof item.id === 'string').slice(0, 200).map(item => ({
+              id: String(item.id).slice(0, 40),
+              text: String(item.text || '').slice(0, 400),
+              done: !!item.done
+            })) : []
+          })).slice(0, 40);
+        }
+        if (data.tl && typeof data.tl === 'object') applyStoredTools(data.tl);
+      } catch (err) { console.error('localStorage read failed:', err); }
+    }
+    function applyStoredTools(stored) {
+      if (!AppState.tl) AppState.tl = {};
+      if (stored.foodcost && typeof stored.foodcost === 'object') {
+        const units = ['г', 'кг', 'мл', 'л', 'шт'];
+        const rows = Array.isArray(stored.foodcost.rows) ? stored.foodcost.rows.filter(r => r && typeof r === 'object').slice(0, 40).map(r => ({ n: String(r.n || '').slice(0, 80), q: String(r.q || '').slice(0, 20), u: units.includes(r.u) ? r.u : 'г', p: String(r.p || '').slice(0, 20) })) : [];
+        AppState.tl.foodcost = { dish: String(stored.foodcost.dish || '').slice(0, 120), price: String(stored.foodcost.price || '').slice(0, 20), target: String(stored.foodcost.target || '30').slice(0, 10), rows: rows.length ? rows : [{ n: '', q: '', u: 'г', p: '' }] };
+      }
+      ['breakeven', 'labor', 'revenue'].forEach(key => {
+        if (stored[key] && typeof stored[key] === 'object') {
+          AppState.tl[key] = Object.assign({}, AppState.tl[key], stored[key]);
+          Object.keys(AppState.tl[key]).forEach(f => { AppState.tl[key][f] = String(AppState.tl[key][f] || '').slice(0, 40); });
+        }
+      });
+    }
+    function downloadBytes(bytes, filename, mime) {
+      const blob = new Blob([bytes], { type: mime });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = filename;
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1500);
+    }
+
+    /* ============ 4. ОФИС-БИЛДЕРЫ ============ */
+    function crc32(data) { let c = ~0; for (let i = 0; i < data.length; i++) { c ^= data[i]; for (let k = 0; k < 8; k++) c = (c >>> 1) ^ (0xEDB88320 & -(c & 1)); } return (~c) >>> 0; }
+    function zipStore(entries) {
+      const enc = new TextEncoder(), locals = [], centrals = [];
+      let offset = 0;
+      entries.forEach(entry => {
+        const name = enc.encode(entry.name);
+        const data = typeof entry.data === 'string' ? enc.encode(entry.data) : entry.data;
+        const crc = crc32(data);
+        const local = new Uint8Array(30 + name.length);
+        const dv = new DataView(local.buffer);
+        dv.setUint32(0, 0x04034b50, true); dv.setUint16(4, 20, true); dv.setUint16(6, 0x0800, true);
+        dv.setUint16(8, 0, true); dv.setUint16(10, 0, true); dv.setUint16(12, 0x21, true);
+        dv.setUint32(14, crc, true); dv.setUint32(18, data.length, true); dv.setUint32(22, data.length, true);
+        dv.setUint16(26, name.length, true); dv.setUint16(28, 0, true);
+        local.set(name, 30); locals.push(local, data);
+        const cen = new Uint8Array(46 + name.length);
+        const cv = new DataView(cen.buffer);
+        cv.setUint32(0, 0x02014b50, true); cv.setUint16(4, 20, true); cv.setUint16(6, 20, true);
+        cv.setUint16(8, 0x0800, true); cv.setUint16(10, 0, true); cv.setUint16(12, 0, true); cv.setUint16(14, 0x21, true);
+        cv.setUint32(16, crc, true); cv.setUint32(20, data.length, true); cv.setUint32(24, data.length, true);
+        cv.setUint16(28, name.length, true); cv.setUint16(30, 0, true); cv.setUint16(32, 0, true);
+        cv.setUint16(34, 0, true); cv.setUint16(36, 0, true); cv.setUint32(38, 0, true); cv.setUint32(42, offset, true);
+        cen.set(name, 46); centrals.push(cen);
+        offset += local.length + data.length;
+      });
+      const centralSize = centrals.reduce((s, p) => s + p.length, 0);
+      const eocd = new Uint8Array(22);
+      const ev = new DataView(eocd.buffer);
+      ev.setUint32(0, 0x06054b50, true); ev.setUint16(8, entries.length, true); ev.setUint16(10, entries.length, true);
+      ev.setUint32(12, centralSize, true); ev.setUint32(16, offset, true);
+      const out = new Uint8Array(offset + centralSize + 22);
+      let p = 0;
+      locals.forEach(part => { out.set(part, p); p += part.length; });
+      centrals.forEach(part => { out.set(part, p); p += part.length; });
+      out.set(eocd, p);
+      return out;
+    }
+    function xmlEscape(v) { return String(v == null ? '' : v).replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+    function colName(index) { let n = index + 1, s = ''; while (n > 0) { const m = (n - 1) % 26; s = String.fromCharCode(65 + m) + s; n = Math.floor((n - 1) / 26); } return s; }
+    function parseDemoTable(text) { return String(text).replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n').filter(l => l.length).map(l => l.split(';')); }
+    function buildXlsx(text) {
+      const rows = parseDemoTable(text);
+      const sheetRows = rows.map((row, r) => {
+        const cells = row.map((cell, c) => `<c r="${colName(c)}${r + 1}" t="inlineStr"><is><t xml:space="preserve">${xmlEscape(cell)}</t></is></c>`).join('');
+        return `<row r="${r + 1}">${cells}</row>`;
+      }).join('');
+      const sheet = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>${sheetRows}</sheetData></worksheet>`;
+      return zipStore([
+        { name: '[Content_Types].xml', data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/></Types>` },
+        { name: '_rels/.rels', data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>` },
+        { name: 'xl/workbook.xml', data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="Шаблон" sheetId="1" r:id="rId1"/></sheets></workbook>` },
+        { name: 'xl/_rels/workbook.xml.rels', data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>` },
+        { name: 'xl/styles.xml', data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><fonts count="1"><font><sz val="11"/><name val="Calibri"/><family val="2"/></font></fonts><fills count="2"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill></fills><borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/></cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>` },
+        { name: 'xl/worksheets/sheet1.xml', data: sheet }
+      ]);
+    }
+    function buildDocx(text) {
+      const paragraphs = String(text).replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n').map(l => l.length ? `<w:p><w:r><w:t xml:space="preserve">${xmlEscape(l)}</w:t></w:r></w:p>` : '<w:p/>').join('');
+      const documentXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>${paragraphs}<w:sectPr><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1134" w:right="1134" w:bottom="1134" w:left="1134" w:header="0" w:footer="0" w:gutter="0"/></w:sectPr></w:body></w:document>`;
+      return zipStore([
+        { name: '[Content_Types].xml', data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/></Types>` },
+        { name: '_rels/.rels', data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>` },
+        { name: 'word/_rels/document.xml.rels', data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>` },
+        { name: 'word/styles.xml', data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr></w:rPrDefault></w:docDefaults><w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/><w:qFormat/></w:style></w:styles>` },
+        { name: 'word/document.xml', data: documentXml }
+      ]);
+    }
+    function loadScriptOnce(src, globalName) {
+      if (globalName && window[globalName]) return Promise.resolve();
+      return new Promise((resolve, reject) => {
+        const existing = document.querySelector(`script[data-src="${src}"]`);
+        if (existing) { existing.addEventListener('load', () => resolve(), { once: true }); existing.addEventListener('error', () => reject(new Error(src)), { once: true }); return; }
+        const script = document.createElement('script');
+        script.src = src; script.async = true; script.dataset.src = src;
+        script.onload = () => resolve(); script.onerror = () => reject(new Error(src));
+        document.head.appendChild(script);
+      });
+    }
+    let pdfFontPromise = null;
+    function loadPdfFont() {
+      if (!pdfFontPromise) {
+        pdfFontPromise = fetch('https://cdn.jsdelivr.net/gh/notofonts/notofonts.github.io@main/fonts/NotoSans/hinted/ttf/NotoSans-Regular.ttf')
+          .then(res => { if (!res.ok) throw new Error('font'); return res.arrayBuffer(); })
+          .catch(() => fetch('https://cdn.jsdelivr.net/gh/googlefonts/noto-fonts@main/hinted/ttf/NotoSans/NotoSans-Regular.ttf').then(res => { if (!res.ok) throw new Error('font'); return res.arrayBuffer(); }));
+      }
+      return pdfFontPromise;
+    }
+    async function buildPdf(title, text) {
+      await loadScriptOnce('https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js', 'PDFLib');
+      await loadScriptOnce('https://cdn.jsdelivr.net/npm/@pdf-lib/fontkit@1.1.1/dist/fontkit.umd.min.js', 'fontkit');
+      const fontBytes = await loadPdfFont();
+      const { PDFDocument, rgb } = window.PDFLib;
+      const doc = await PDFDocument.create();
+      doc.registerFontkit(window.fontkit);
+      const font = await doc.embedFont(fontBytes, { subset: true });
+      const pageWidth = 595.28, pageHeight = 841.89, margin = 56, bodySize = 11, titleSize = 16;
+      const maxWidth = pageWidth - margin * 2;
+      const wrap = (source, size) => {
+        const lines = [];
+        String(source).replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n').forEach(paragraph => {
+          if (!paragraph.trim()) { lines.push(''); return; }
+          let line = '';
+          paragraph.split(/\s+/).forEach(word => {
+            const trial = line ? `${line} ${word}` : word;
+            if (font.widthOfTextAtSize(trial, size) <= maxWidth) { line = trial; return; }
+            if (line) lines.push(line);
+            if (font.widthOfTextAtSize(word, size) <= maxWidth) { line = word; return; }
+            let chunk = '';
+            word.split('').forEach(ch => { const next = chunk + ch; if (font.widthOfTextAtSize(next, size) > maxWidth && chunk) { lines.push(chunk); chunk = ch; } else chunk = next; });
+            line = chunk;
+          });
+          if (line) lines.push(line);
+        });
+        return lines;
+      };
+      const titleLines = wrap(title, titleSize), bodyLines = wrap(text, bodySize);
+      let page = doc.addPage([pageWidth, pageHeight]); let y = pageHeight - margin;
+      const newPage = () => { page = doc.addPage([pageWidth, pageHeight]); y = pageHeight - margin; };
+      const ensure = (n) => { if (y - n < margin) newPage(); };
+      page.drawText('РестоХаб · учебный шаблон', { x: margin, y, size: 9, font, color: rgb(0.35, 0.34, 0.31) }); y -= 28;
+      titleLines.forEach(line => { ensure(titleSize + 6); if (line) page.drawText(line, { x: margin, y, size: titleSize, font, color: rgb(0.09, 0.1, 0.09) }); y -= titleSize + 6; });
+      y -= 8;
+      bodyLines.forEach(line => { ensure(bodySize + 5); if (line) page.drawText(line, { x: margin, y, size: bodySize, font, color: rgb(0.09, 0.1, 0.09) }); y -= bodySize + 5; });
+      return doc.save();
+    }
+    async function downloadDemoFile(articleId, attachmentIdx) {
+      try {
+        const article = MATERIALS.find(m => m.id === articleId);
+        if (!article || !article.attachments[attachmentIdx]) return;
+        const file = article.attachments[attachmentIdx];
+        const content = file.demoContent || '';
+        if (file.format === 'XLSX') { downloadBytes(buildXlsx(content), file.name, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'); showToast('Шаблон XLSX сформирован'); }
+        else if (file.format === 'DOCX') { downloadBytes(buildDocx(content), file.name, 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'); showToast('Шаблон DOCX сформирован'); }
+        else if (file.format === 'PDF') { showToast('Формируем PDF…'); const bytes = await buildPdf(file.name.replace(/\.pdf$/i, ''), content); downloadBytes(bytes, file.name, 'application/pdf'); showToast('PDF сформирован'); }
+        else { showToast('Формат файла не поддерживается'); }
+      } catch (err) { console.error(err); showToast('Не удалось сформировать файл', 'wine'); }
+    }
+
+    /* ============ 5. ПРОСТРАНСТВО ============ */
+    function openSpace() {
+      const overlay = document.getElementById('space-overlay');
+      if (!overlay) return;
+      overlay.classList.add('is-open');
+      overlay.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+      closeModal();
+    }
+    function closeSpace() {
+      const overlay = document.getElementById('space-overlay');
+      if (!overlay) return;
+      overlay.classList.remove('is-open');
+      overlay.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+    }
+    function navigateFromSpace(view) {
+      closeSpace();
+      // Дадим анимации закрытия завершиться до перерисовки
+      setTimeout(() => navigateTo(view), 220);
+    }
+
+    /* ============ 6. АНИМАЦИИ ============ */
+    let revealObserver = null;
+    function initRevealObserver() {
+      if (revealObserver) revealObserver.disconnect();
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        document.querySelectorAll('[data-reveal]').forEach(el => el.classList.add('is-revealed'));
+        return;
+      }
+      revealObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-revealed');
+            revealObserver.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.12, rootMargin: '0px 0px -60px 0px' });
+      document.querySelectorAll('[data-reveal]:not(.is-revealed)').forEach(el => revealObserver.observe(el));
+    }
+    function markReveal(el, delay) {
+      if (!el) return '';
+      return `data-reveal ${delay ? `data-reveal-delay="${delay}"` : ''}`;
+    }
+    function setupScrollProgress() {
+      const bar = document.getElementById('scroll-hairline-bar');
+      if (!bar) return;
+      const update = () => {
+        const h = document.documentElement;
+        const max = h.scrollHeight - h.clientHeight;
+        const p = max > 0 ? Math.min(100, (h.scrollTop / max) * 100) : 0;
+        bar.style.setProperty('--scroll-progress', p + '%');
+      };
+      window.addEventListener('scroll', update, { passive: true });
+      update();
+    }
+
+    /* ============ 7. НАВИГАЦИЯ ============ */
+    function navigateTo(view) {
+      AppState.currentView = view;
+      const root = document.getElementById('app-root');
+      if (!root) return;
+      switch (view) {
+        case 'home': renderHome(); break;
+        case 'catalog': renderCatalog(); break;
+        case 'article': renderArticle(); break;
+        case 'cases': renderCases(); break;
+        case 'case': renderCase(); break;
+        case 'experts': renderExperts(); break;
+        case 'expert': renderExpertProfile(); break;
+        case 'tools': renderTools(); break;
+        case 'checklists': renderChecklists(); break;
+        case 'pricing': renderPricing(); break;
+        case 'about': renderAbout(); break;
+        case 'cabinet': renderCabinet(); break;
+        default: renderHome();
+      }
+      updateNavActive(view);
+      window.scrollTo({ top: 0, behavior: 'auto' });
+      // Переинициализируем анимации для нового вида
+      requestAnimationFrame(() => { initRevealObserver(); setupScrollProgress(); });
+    }
+    function updateNavActive(view) {
+      document.querySelectorAll('.nav-link').forEach(btn => {
+        const nav = btn.getAttribute('data-nav');
+        const active = nav === view || (view === 'article' && nav === 'catalog') || (view === 'case' && nav === 'cases') || (view === 'expert' && nav === 'experts');
+        btn.classList.toggle('is-active', active);
+      });
+    }
+    function renderHeaderActions() {
+      const el = document.getElementById('header-actions');
+      if (!el) return;
+      if (AppState.user.isAuthenticated) {
+        el.innerHTML = `
+          <button type="button" onclick="openDemoCabinetQuick()" class="text-[10.5px] uppercase tracking-[0.16em] text-ink-muted hover:text-obsidian">${escapeHtml(AppState.user.name)}</button>
+          <button type="button" onclick="navigateTo('cabinet')" class="text-[10.5px] uppercase tracking-[0.16em] border border-obsidian/30 text-obsidian px-4 py-2 hover:bg-obsidian/5 transition-colors">Кабинет</button>
+        `;
+      } else {
+        el.innerHTML = `
+          <button type="button" onclick="openModal('login')" class="text-[10.5px] uppercase tracking-[0.16em] text-ink-muted hover:text-obsidian">Вход</button>
+        `;
+      }
+    }
+    function handleModalBackdropClick(event) { if (event.target && event.target.id === 'modal-backdrop') closeModal(); }
+    function openDemoCabinetQuick() {
+      AppState.user.isAuthenticated = true;
+      AppState.user.name = AppState.user.name === 'Гость' ? 'Демо-гость' : AppState.user.name;
+      AppState.user.role = 'Демо-доступ · PRO';
+      if (AppState.user.plan === 'FREE') AppState.user.plan = 'PRO';
+      renderHeaderActions();
+      showToast('Открыт демо-кабинет');
+      navigateTo('cabinet');
+    }
+
+    /* ============ 8. МОДАЛЬНЫЕ ОКНА ============ */
+    function openModal(mode) {
+      const backdrop = document.getElementById('modal-backdrop');
+      const container = document.getElementById('modal-container');
+      if (!backdrop || !container) return;
+      backdrop.classList.remove('hidden'); backdrop.classList.add('flex');
+      if (mode === 'login') {
+        container.innerHTML = `
+          <div class="modal-animate bg-ivory text-obsidian hairline-all p-6 sm:p-8">
+            <div class="flex items-start justify-between gap-4">
+              <div>
+                <div class="text-[10px] uppercase tracking-[0.2em] text-ink-subtle mb-2">Вход в клуб</div>
+                <h3 class="font-serif text-3xl">С возвращением</h3>
+              </div>
+              <button type="button" onclick="closeModal()" class="text-[11px] uppercase tracking-[0.18em] text-ink-muted hover:text-obsidian">Закрыть ✕</button>
+            </div>
+            <form onsubmit="submitDemoLogin(event)" class="mt-6 space-y-4">
+              <div><label class="tool-label">Электронная почта</label><input type="email" required class="tool-input" placeholder="you@restohub.ru"></div>
+              <div><label class="tool-label">Пароль</label><input type="password" required class="tool-input" placeholder="••••••••"></div>
+              <button type="submit" class="w-full bg-obsidian text-ivory py-3 text-[10px] uppercase tracking-[0.18em] hover:bg-obsidian-soft transition-colors">Войти (демо)</button>
+            </form>
+            <p class="mt-4 text-[11px] text-ink-subtle leading-relaxed">Демонстрационный сценарий: реальная проверка пароля не выполняется.</p>
+          </div>
+        `;
+      } else if (mode === 'register') {
+        container.innerHTML = `
+          <div class="modal-animate bg-ivory text-obsidian hairline-all p-6 sm:p-8">
+            <div class="flex items-start justify-between gap-4">
+              <div>
+                <div class="text-[10px] uppercase tracking-[0.2em] text-ink-subtle mb-2">Регистрация в клубе</div>
+                <h3 class="font-serif text-3xl">Создать доступ</h3>
+              </div>
+              <button type="button" onclick="closeModal()" class="text-[11px] uppercase tracking-[0.18em] text-ink-muted hover:text-obsidian">Закрыть ✕</button>
+            </div>
+            <form onsubmit="submitDemoRegister(event)" class="mt-6 space-y-4">
+              <div><label class="tool-label">Имя</label><input type="text" required class="tool-input" placeholder="Как к вам обращаться"></div>
+              <div><label class="tool-label">Электронная почта</label><input type="email" required class="tool-input" placeholder="you@restohub.ru"></div>
+              <div><label class="tool-label">Пароль</label><input type="password" required class="tool-input" placeholder="Минимум 8 символов"></div>
+              <button type="submit" class="w-full bg-obsidian text-ivory py-3 text-[10px] uppercase tracking-[0.18em] hover:bg-obsidian-soft transition-colors">Зарегистрироваться (демо)</button>
+            </form>
+            <p class="mt-4 text-[11px] text-ink-subtle leading-relaxed">Демонстрационный сценарий: данные не отправляются на сервер.</p>
+          </div>
+        `;
+      } else if (mode === 'checkout') {
+        const plan = PLANS[AppState.pendingCheckoutPlan || 'PRO'];
+        container.innerHTML = `
+          <div class="modal-animate bg-ivory text-obsidian hairline-all p-6 sm:p-8">
+            <div class="flex items-start justify-between gap-4">
+              <div>
+                <div class="text-[10px] uppercase tracking-[0.2em] text-ink-subtle mb-2">Демо-оформление подписки</div>
+                <h3 class="font-serif text-3xl">${escapeHtml(plan.name)} · ${escapeHtml(plan.label)}</h3>
+              </div>
+              <button type="button" onclick="closeModal()" class="text-[11px] uppercase tracking-[0.18em] text-ink-muted hover:text-obsidian">Закрыть ✕</button>
+            </div>
+            <div class="mt-4 text-[10px] uppercase tracking-[0.2em] text-ink-subtle">Стоимость</div>
+            <div class="font-serif text-4xl mt-1">${escapeHtml(plan.priceLabel)} <span class="text-sm text-ink-subtle font-sans">${escapeHtml(plan.period)}</span></div>
+            <p class="mt-4 text-sm text-ink-muted leading-relaxed font-light">${escapeHtml(plan.tagline)}</p>
+            <ul class="mt-5 space-y-2 text-sm text-ink-muted font-light">
+              ${plan.features.map(f => `<li class="flex gap-2"><span class="text-olive">·</span><span>${escapeHtml(f)}</span></li>`).join('')}
+            </ul>
+            <button type="button" onclick="confirmDemoCheckout()" class="mt-6 w-full bg-obsidian text-ivory py-3 text-[10px] uppercase tracking-[0.18em] hover:bg-obsidian-soft transition-colors">Подтвердить (демо)</button>
+            <p class="mt-4 text-[11px] text-ink-subtle leading-relaxed">Демонстрационный платёжный сценарий без реального списания.</p>
+          </div>
+        `;
+      } else {
+        container.innerHTML = '';
+        closeModal();
+      }
+    }
+    function closeModal() {
+      const backdrop = document.getElementById('modal-backdrop');
+      if (!backdrop) return;
+      backdrop.classList.add('hidden'); backdrop.classList.remove('flex');
+      const container = document.getElementById('modal-container');
+      if (container) container.innerHTML = '';
+    }
+    function submitDemoLogin(e) {
+      e.preventDefault();
+      AppState.user.isAuthenticated = true;
+      AppState.user.name = AppState.user.name === 'Гость' ? 'Демо-гость' : AppState.user.name;
+      AppState.user.role = 'Демо-доступ';
+      closeModal();
+      renderHeaderActions();
+      showToast('Демо-вход выполнен');
+      navigateTo('cabinet');
+    }
+    function submitDemoRegister(e) {
+      e.preventDefault();
+      const name = (e.target.querySelector('input[type="text"]')?.value || 'Демо-гость').trim().slice(0, 60);
+      const email = (e.target.querySelector('input[type="email"]')?.value || '').trim().slice(0, 120);
+      AppState.user.isAuthenticated = true;
+      AppState.user.name = name || 'Демо-гость';
+      AppState.user.email = email;
+      AppState.user.role = 'Демо-участник';
+      closeModal();
+      renderHeaderActions();
+      showToast('Демо-регистрация выполнена');
+      navigateTo('cabinet');
+    }
+    function openDemoCheckout(planId) {
+      AppState.pendingCheckoutPlan = PLANS[planId] ? planId : 'PRO';
+      openModal('checkout');
+    }
+    function confirmDemoCheckout() {
+      const planId = AppState.pendingCheckoutPlan || 'PRO';
+      AppState.user.plan = planId;
+      AppState.user.isAuthenticated = true;
+      if (AppState.user.name === 'Гость') AppState.user.name = 'Демо-участник';
+      AppState.paymentHistory.unshift({ id: 'DEMO-' + Date.now().toString().slice(-8), date: 'Сегодня (демо)', plan: planId, amount: PLANS[planId].priceLabel, status: 'Подтверждено (демо)' });
+      closeModal();
+      renderHeaderActions();
+      showToast(`Тариф ${planId} активирован (демо)`);
+      navigateTo('cabinet');
+    }
+
+    /* ============ 9. КАТАЛОГ / ФИЛЬТРЫ ============ */
+    function setFilter(field, value) { AppState.filters[field] = value; renderCatalog(); }
+    function getFilteredMaterials() {
+      const f = AppState.filters;
+      let items = MATERIALS.slice();
+      if (f.category !== 'ALL') items = items.filter(m => m.category === f.category);
+      if (f.type !== 'ALL') items = items.filter(m => m.type === f.type);
+      if (f.access !== 'ALL') items = items.filter(m => m.access === f.access);
+      if (f.search.trim()) {
+        const q = f.search.trim().toLowerCase();
+        items = items.filter(m => [m.title, m.description, m.author, m.category, ...(m.tags || [])].join(' ').toLowerCase().includes(q));
+      }
+      if (f.sort === 'popularity') items.sort((a, b) => b.popularity - a.popularity);
+      else if (f.sort === 'new') items.sort((a, b) => new Date(b.date) - new Date(a.date));
+      else if (f.sort === 'short') items.sort((a, b) => a.readTime - b.readTime);
+      return items;
+    }
+    function resetCatalogFilters() {
+      AppState.filters = { search: '', category: 'ALL', type: 'ALL', access: 'ALL', sort: 'popularity' };
+      renderCatalog();
+    }
+
+    /* ============ 10. КАРТОЧКА МАТЕРИАЛА ============ */
+    function renderMaterialCard(m, delay) {
+      const attr = `data-reveal ${delay ? `data-reveal-delay="${delay}"` : ''}`;
+      return `
+        <article ${attr}>
+          <button type="button" onclick="openArticle(${m.id})" class="block w-full text-left photo-trigger group">
+            <div class="photo-box aspect-[16/10] mb-4">
+              <img src="${m.image}" alt="${escapeHtml(m.title)}" loading="lazy">
+            </div>
+            <div class="flex items-center gap-3 text-[10px] uppercase tracking-[0.16em] text-ink-subtle mb-2">
+              <span>${escapeHtml(m.category)}</span><span>·</span><span>${escapeHtml(m.type)}</span><span>·</span>${getAccessMarkHtml(m.access)}
+            </div>
+            <h3 class="font-serif text-2xl leading-snug group-hover:text-olive transition-colors">${escapeHtml(m.title)}</h3>
+            <p class="mt-2 text-sm text-ink-muted font-light leading-relaxed line-clamp-3">${escapeHtml(m.description)}</p>
+            <div class="mt-3 text-[10px] uppercase tracking-[0.16em] text-ink-subtle">${escapeHtml(m.author)} · ${m.readTime} мин</div>
+          </button>
+        </article>
+      `;
+    }
+
+    /* ============ 11. ГЛАВНАЯ ============ */
+    function renderHome() {
+      const featured = MATERIALS.slice().sort((a, b) => b.popularity - a.popularity).slice(0, 4);
+      document.getElementById('app-root').innerHTML = `
+        <section class="view-transition relative bg-obsidian text-ivory overflow-hidden">
+          <div class="max-w-[1440px] mx-auto px-5 sm:px-8 lg:px-12 pt-14 sm:pt-20 pb-16 sm:pb-24 grid lg:grid-cols-12 gap-10 lg:gap-16 items-center">
+            <div class="lg:col-span-6">
+              <div data-reveal class="text-[10px] uppercase tracking-[0.28em] text-ivory/55 mb-8">Закрытая библиотека · издание 2026</div>
+              <h1 data-reveal data-reveal-delay="1" class="hero-display text-[44px] sm:text-[64px] lg:text-[86px]">
+                Стандарты<br>
+                высокой<br>
+                <span class="accent">ресторанной</span><br>
+                индустрии
+              </h1>
+              <p data-reveal data-reveal-delay="3" class="mt-8 text-base sm:text-lg text-ivory/70 font-light leading-relaxed max-w-lg">
+                Экономика, операционное управление, сервис, кухня и правовой порядок. 18 кураторских материалов и четыре рабочих калькулятора в одном издании.
+              </p>
+              <div data-reveal data-reveal-delay="4" class="mt-10 flex flex-wrap gap-3">
+                <button type="button" onclick="navigateTo('catalog')" class="bg-ivory text-obsidian px-7 py-4 text-[10px] uppercase tracking-[0.2em] hover:bg-linen transition-colors">Открыть библиотеку</button>
+                <button type="button" onclick="navigateTo('tools')" class="border border-ivory/40 text-ivory px-7 py-4 text-[10px] uppercase tracking-[0.2em] hover:bg-ivory/10 transition-colors">К инструментам</button>
+              </div>
+            </div>
+            <div class="lg:col-span-6 relative">
+              <div data-reveal="image" class="photo-box aspect-[4/5] hero-photo-animate slow-drift">
+                <img src="${HERO_ASSETS.cover}" alt="Ресторанный зал">
+              </div>
+              <div data-reveal data-reveal-delay="3" class="absolute -bottom-6 -left-6 hidden md:block bg-ivory text-obsidian p-5 max-w-[240px] hairline-all">
+                <div class="text-[10px] uppercase tracking-[0.22em] text-ink-subtle mb-2">Редакция</div>
+                <div class="font-serif text-lg leading-tight">«Дорогой продукт начинается с дисциплины, а не с декора»</div>
+              </div>
+            </div>
+          </div>
+          <div class="max-w-[1440px] mx-auto px-5 sm:px-8 lg:px-12 pb-6 text-[10px] uppercase tracking-[0.28em] text-ivory/40 flex justify-between">
+            <span>01 — Знания</span>
+            <span class="hidden sm:inline">02 — Практика</span>
+            <span class="hidden md:inline">03 — Членство</span>
+            <span>РестоХаб · 2026</span>
+          </div>
+        </section>
+
+        <section class="max-w-[1440px] mx-auto px-5 sm:px-8 lg:px-12 py-20 sm:py-28">
+          <div class="grid lg:grid-cols-12 gap-10 lg:gap-16 items-start">
+            <div data-reveal class="lg:col-span-4">
+              <div class="text-[10px] uppercase tracking-[0.22em] text-ink-subtle mb-4">Философия издания</div>
+              <h2 class="font-serif text-4xl sm:text-5xl leading-[0.98]">Не учебник.<br><span class="italic text-olive">Рабочая библиотека стандартов.</span></h2>
+            </div>
+            <div class="lg:col-span-8 lg:pl-12 lg:border-l hairline-l">
+              <div data-reveal="image" class="photo-box aspect-[16/9] mb-8">
+                <img src="${HERO_ASSETS.philosophy}" alt="Философия">
+              </div>
+              <p data-reveal data-reveal-delay="1" class="text-base sm:text-lg text-ink-muted leading-relaxed font-light max-w-2xl">
+                РестоХаб собирает под одной обложкой то, что обычно разбросано по десяткам источников: регламенты, шаблоны, чек-листы, финансовые модели и редакционные материалы от практиков. Мы не публикуем «советы на все случаи жизни» — только воспроизводимые стандарты, применимые к реальной смене.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section class="max-w-[1440px] mx-auto px-5 sm:px-8 lg:px-12 pb-20 sm:pb-28">
+          <div class="flex flex-wrap items-end justify-between gap-6 mb-12">
+            <div>
+              <div class="text-[10px] uppercase tracking-[0.22em] text-ink-subtle mb-3">Семь направлений</div>
+              <h2 class="font-serif text-3xl sm:text-5xl leading-[1.02]">Архитектура библиотеки</h2>
+            </div>
+            <button type="button" onclick="navigateTo('catalog')" class="text-[10px] uppercase tracking-[0.18em] text-obsidian editorial-link">Все материалы →</button>
+          </div>
+          <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-14">
+            ${CATEGORIES.map((cat, i) => `
+              <button data-reveal data-reveal-delay="${i % 4 + 1}" type="button" onclick="AppState.filters.category='${escapeHtml(cat.id).replace(/'/g, "\\'")}'; AppState.filters.search=''; navigateTo('catalog')" class="text-left group">
+                <div class="photo-box aspect-[5/3] mb-5"><img src="${cat.preview}" alt="${escapeHtml(cat.id)}" loading="lazy"></div>
+                <div class="flex items-baseline gap-3">
+                  <span class="text-[10px] uppercase tracking-[0.2em] text-ink-subtle">${cat.num}</span>
+                  <h3 class="font-serif text-xl group-hover:text-olive transition-colors">${escapeHtml(cat.id)}</h3>
+                </div>
+                <p class="mt-2 text-sm text-ink-muted font-light leading-relaxed">${escapeHtml(cat.desc)}</p>
+              </button>
+            `).join('')}
+          </div>
+        </section>
+
+        <section class="max-w-[1440px] mx-auto px-5 sm:px-8 lg:px-12 pb-20 sm:pb-28">
+          <div class="flex flex-wrap items-end justify-between gap-6 mb-12">
+            <div>
+              <div class="text-[10px] uppercase tracking-[0.22em] text-ink-subtle mb-3">Кураторский отбор</div>
+              <h2 class="font-serif text-3xl sm:text-5xl leading-[1.02]">Материалы, с которых стоит начать</h2>
+            </div>
+            <button type="button" onclick="navigateTo('catalog')" class="text-[10px] uppercase tracking-[0.18em] text-obsidian editorial-link">Вся библиотека →</button>
+          </div>
+          <div class="grid md:grid-cols-2 gap-x-10 gap-y-14">
+            ${featured.map((m, i) => renderMaterialCard(m, i % 4 + 1)).join('')}
+          </div>
+        </section>
+
+        <section class="bg-linen">
+          <div class="max-w-[1440px] mx-auto px-5 sm:px-8 lg:px-12 py-16 sm:py-20 grid md:grid-cols-12 gap-10 items-center">
+            <div data-reveal class="md:col-span-7">
+              <div class="text-[10px] uppercase tracking-[0.22em] text-ink-subtle mb-4">Практика · Инструменты</div>
+              <h2 class="font-serif text-3xl sm:text-5xl leading-[1.02]">Четыре калькулятора<br>ресторанной экономики</h2>
+              <p class="mt-5 text-base text-ink-muted font-light leading-relaxed max-w-xl">Food Cost, точка безубыточности, Labor Cost и прогноз выручки по посадочным местам. Расчёты выполняются локально в браузере, без отправки на сервер.</p>
+            </div>
+            <div data-reveal data-reveal-delay="2" class="md:col-span-5 flex flex-wrap gap-4 md:justify-end">
+              <button type="button" onclick="navigateTo('tools')" class="bg-obsidian text-ivory px-6 py-4 text-[10px] uppercase tracking-[0.18em] hover:bg-obsidian-soft transition-colors">Открыть инструменты</button>
+              <button type="button" onclick="navigateTo('checklists')" class="border border-obsidian/30 text-obsidian px-6 py-4 text-[10px] uppercase tracking-[0.18em] hover:bg-obsidian/5 transition-colors">Генератор чек-листов</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="max-w-[1440px] mx-auto px-5 sm:px-8 lg:px-12 py-20 sm:py-28">
+          <div class="flex flex-wrap items-end justify-between gap-6 mb-12">
+            <div>
+              <div class="text-[10px] uppercase tracking-[0.22em] text-ink-subtle mb-3">Редакция · Эксперты</div>
+              <h2 class="font-serif text-3xl sm:text-5xl leading-[1.02]">Авторы и практики</h2>
+            </div>
+            <button type="button" onclick="navigateTo('experts')" class="text-[10px] uppercase tracking-[0.18em] text-obsidian editorial-link">Все эксперты →</button>
+          </div>
+          <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-10">
+            ${EXPERTS.slice(0, 4).map((e, i) => `
+              <button data-reveal data-reveal-delay="${i + 1}" type="button" onclick="openExpert(${e.id})" class="text-left group">
+                <div class="photo-box aspect-[4/5] mb-4"><img src="${escapeHtml(e.photo)}" alt="${escapeHtml(e.name)}" loading="lazy"></div>
+                <div class="text-[10px] uppercase tracking-[0.16em] text-ink-subtle mb-2">${e.specializations.map(escapeHtml).join(' · ')}</div>
+                <div class="font-serif text-xl leading-snug group-hover:text-olive transition-colors">${escapeHtml(e.name)}</div>
+                <div class="text-sm text-ink-muted mt-1">${escapeHtml(e.role)}</div>
+              </button>
+            `).join('')}
+          </div>
+        </section>
+
+        <section class="bg-obsidian text-ivory">
+          <div class="max-w-[1440px] mx-auto px-5 sm:px-8 lg:px-12 py-20 sm:py-28 grid md:grid-cols-12 gap-10 items-end">
+            <div data-reveal class="md:col-span-8">
+              <div class="text-[10px] uppercase tracking-[0.22em] text-ivory/55 mb-4">Членство в клубе</div>
+              <h2 class="font-serif text-3xl sm:text-5xl leading-[1.02]">Полное членство открывает все 18 материалов, финансовые модели и полный комплект журналов.</h2>
+            </div>
+            <div data-reveal data-reveal-delay="2" class="md:col-span-4 flex md:justify-end">
+              <button type="button" onclick="navigateTo('pricing')" class="bg-ivory text-obsidian px-7 py-4 text-[10px] uppercase tracking-[0.18em] hover:bg-linen transition-colors">Смотреть тарифы</button>
+            </div>
+          </div>
+        </section>
+      `;
+    }
+
+    /* ============ 12. БИБЛИОТЕКА ============ */
+    function renderCatalog() {
+      const items = getFilteredMaterials();
+      const types = ['ALL', ...Array.from(new Set(MATERIALS.map(m => m.type)))];
+      const accesses = ['ALL', 'FREE', 'PRO', 'PREMIUM'];
+      const f = AppState.filters;
+      document.getElementById('app-root').innerHTML = `
+        <section class="view-transition max-w-[1440px] mx-auto px-5 sm:px-8 lg:px-12 py-12 sm:py-20">
+          <div data-reveal class="max-w-4xl">
+            <div class="text-[10px] uppercase tracking-[0.22em] text-ink-subtle mb-4">Библиотека · ${getPluralMaterials(MATERIALS.length)}</div>
+            <h1 class="font-serif text-4xl sm:text-6xl leading-[0.98]">Профессиональная <span class="italic text-olive">база знаний</span></h1>
+            <p class="mt-6 text-sm sm:text-base text-ink-muted leading-relaxed font-light max-w-2xl">Поиск и фильтрация по семи направлениям. Часть материалов доступна только участникам клуба PRO и PREMIUM — в демо-режиме доступ можно активировать в разделе «Тарифы».</p>
+          </div>
+          <div class="mt-10 grid lg:grid-cols-12 gap-10">
+            <aside class="lg:col-span-3">
+              <div data-reveal class="hairline-all p-5 space-y-5 lg:sticky lg:top-28">
+                <div><label class="tool-label">Поиск</label><input class="tool-input" value="${escapeHtml(f.search)}" placeholder="Название, тема, автор" oninput="AppState.filters.search=this.value; renderCatalog()"></div>
+                <div><label class="tool-label">Направление</label>
+                  <select class="tool-input" onchange="setFilter('category', this.value)">
+                    <option value="ALL">Все направления</option>
+                    ${CATEGORIES.map(c => `<option value="${escapeHtml(c.id)}" ${f.category === c.id ? 'selected' : ''}>${escapeHtml(c.id)}</option>`).join('')}
+                  </select>
+                </div>
+                <div><label class="tool-label">Тип</label>
+                  <select class="tool-input" onchange="setFilter('type', this.value)">
+                    ${types.map(t => `<option value="${escapeHtml(t)}" ${f.type === t ? 'selected' : ''}>${t === 'ALL' ? 'Любой' : escapeHtml(t)}</option>`).join('')}
+                  </select>
+                </div>
+                <div><label class="tool-label">Доступ</label>
+                  <select class="tool-input" onchange="setFilter('access', this.value)">
+                    ${accesses.map(a => `<option value="${a}" ${f.access === a ? 'selected' : ''}>${a === 'ALL' ? 'Любой' : a}</option>`).join('')}
+                  </select>
+                </div>
+                <div><label class="tool-label">Сортировка</label>
+                  <select class="tool-input" onchange="setFilter('sort', this.value)">
+                    <option value="popularity" ${f.sort === 'popularity' ? 'selected' : ''}>По популярности</option>
+                    <option value="new" ${f.sort === 'new' ? 'selected' : ''}>Сначала новые</option>
+                    <option value="short" ${f.sort === 'short' ? 'selected' : ''}>Быстрое чтение</option>
+                  </select>
+                </div>
+              </div>
+            </aside>
+            <div class="lg:col-span-9">
+              <div class="flex items-baseline justify-between hairline-b pb-3 mb-6">
+                <div class="text-[10px] uppercase tracking-[0.18em] text-ink-subtle">Найдено: ${items.length}</div>
+                <button type="button" onclick="resetCatalogFilters()" class="text-[10px] uppercase tracking-[0.16em] text-ink-subtle hover:text-wine">Сбросить</button>
+              </div>
+              ${items.length === 0 ? `<div class="text-sm text-ink-muted py-10">По вашим фильтрам ничего не найдено.</div>` : `
+                <div class="grid sm:grid-cols-2 gap-x-10 gap-y-14">
+                  ${items.map((m, i) => renderMaterialCard(m, i % 4 + 1)).join('')}
+                </div>
+              `}
+            </div>
+          </div>
+        </section>
+      `;
+    }
+
+    /* ============ 13. СТАТЬЯ ============ */
+    function openArticle(id) { AppState.selectedArticleId = id; navigateTo('article'); }
+    function renderArticle() {
+      const m = MATERIALS.find(x => x.id === Number(AppState.selectedArticleId)) || MATERIALS[0];
+      const canRead = hasAccess(m.access);
+      const saved = AppState.savedIds.includes(m.id);
+      document.getElementById('app-root').innerHTML = `
+        <article class="view-transition max-w-[1100px] mx-auto px-5 sm:px-8 lg:px-12 py-10 sm:py-14">
+          <div class="flex items-center justify-between gap-4">
+            <button type="button" onclick="navigateTo('catalog')" class="text-[10px] uppercase tracking-[0.18em] text-ink-muted hover:text-obsidian">← Библиотека</button>
+            <button type="button" onclick="toggleSave(${m.id})" class="text-[10px] uppercase tracking-[0.18em] ${saved ? 'text-wine' : 'text-ink-muted'} hover:text-wine">${saved ? '● В библиотеке' : '○ Сохранить'}</button>
+          </div>
+          <div data-reveal class="mt-8 text-[10px] uppercase tracking-[0.2em] text-ink-subtle">${escapeHtml(m.category)} · ${escapeHtml(m.type)} · ${getAccessMarkHtml(m.access)}</div>
+          <h1 data-reveal data-reveal-delay="1" class="mt-3 font-serif text-3xl sm:text-4xl lg:text-5xl leading-[1.05]">${escapeHtml(m.title)}</h1>
+          <div data-reveal data-reveal-delay="2" class="mt-4 text-[11px] uppercase tracking-[0.16em] text-ink-subtle">${escapeHtml(m.author)} · ${escapeHtml(m.dateLabel)} · ${m.readTime} мин чтения</div>
+          <div data-reveal="image" class="mt-8 photo-box aspect-[16/9]">
+            <img src="${m.image}" alt="${escapeHtml(m.title)}">
+            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-obsidian/80 to-transparent p-4 text-[11px] text-ivory/90">${escapeHtml(m.photoCaption)}</div>
+          </div>
+          ${canRead ? `
+            <div class="mt-10 grid lg:grid-cols-12 gap-10">
+              <div class="lg:col-span-8 space-y-8">
+                ${m.sections.map((s, i) => `
+                  <section data-reveal data-reveal-delay="${Math.min(4, i + 1)}">
+                    <h2 class="font-serif text-2xl sm:text-3xl">${escapeHtml(s.heading)}</h2>
+                    ${s.paragraphs.map(p => `<p class="mt-4 text-base text-ink-muted leading-relaxed font-light">${escapeHtml(p)}</p>`).join('')}
+                    ${s.list ? `<ul class="mt-4 space-y-2.5 text-sm text-ink-muted font-light leading-relaxed">${s.list.map(li => `<li class="flex gap-3"><span class="text-olive shrink-0">—</span><span>${escapeHtml(li)}</span></li>`).join('')}</ul>` : ''}
+                  </section>
+                `).join('')}
+                ${m.checklist ? `
+                  <section data-reveal class="hairline-all p-6">
+                    <div class="text-[10px] uppercase tracking-[0.2em] text-ink-subtle mb-4">Интерактивный чек-лист</div>
+                    ${m.checklist.map((item, i) => {
+                      const done = !!(AppState.checklistState[m.id] && AppState.checklistState[m.id][i]);
+                      return `
+                        <label class="flex items-start gap-3 py-2 hairline-b cursor-pointer">
+                          <input type="checkbox" ${done ? 'checked' : ''} onchange="toggleChecklistItem(${m.id}, ${i})" class="mt-1 accent-olive">
+                          <span class="text-sm ${done ? 'text-ink-subtle line-through' : 'text-ink-muted'}">${escapeHtml(item)}</span>
+                        </label>
+                      `;
+                    }).join('')}
+                  </section>
+                ` : ''}
+                ${m.expertTip ? `
+                  <aside data-reveal class="pl-5 border-l-2 border-wine py-1">
+                    <div class="text-[10px] uppercase tracking-[0.2em] text-wine mb-2">Совет редакции</div>
+                    <p class="text-base text-ink-muted leading-relaxed font-light italic">${escapeHtml(m.expertTip)}</p>
+                  </aside>
+                ` : ''}
+              </div>
+              <aside class="lg:col-span-4">
+                <div data-reveal class="hairline-all p-5">
+                  <div class="text-[10px] uppercase tracking-[0.2em] text-ink-subtle mb-3">Вложения</div>
+                  ${(m.attachments || []).map((a, i) => `
+                    <button type="button" onclick="downloadDemoFile(${m.id}, ${i})" class="block w-full text-left py-3 hairline-b group">
+                      <div class="text-sm group-hover:text-olive transition-colors">${escapeHtml(a.name)}</div>
+                      <div class="text-[10px] uppercase tracking-[0.16em] text-ink-subtle mt-1">${a.format} · ${a.size} · скачать</div>
+                    </button>
+                  `).join('')}
+                  <div class="mt-4 text-[10px] uppercase tracking-[0.16em] text-ink-subtle">${escapeHtml(m.author)}</div>
+                </div>
+                <div data-reveal class="mt-6 hairline-all p-5">
+                  <div class="text-[10px] uppercase tracking-[0.2em] text-ink-subtle mb-3">Теги</div>
+                  <div class="flex flex-wrap gap-2 text-[11px] text-ink-muted">${(m.tags || []).map(t => `<span>#${escapeHtml(t)}</span>`).join(' ')}</div>
+                </div>
+              </aside>
+            </div>
+          ` : `
+            <div data-reveal class="mt-10 hairline-all p-8 sm:p-10 text-center">
+              <div class="text-[10px] uppercase tracking-[0.2em] text-ink-subtle mb-3">Материал уровня ${escapeHtml(m.access)}</div>
+              <h2 class="font-serif text-3xl">Этот материал открывается на уровне ${escapeHtml(m.access)}</h2>
+              <p class="mt-4 text-sm text-ink-muted font-light max-w-xl mx-auto leading-relaxed">Активируйте демо-доступ, чтобы прочитать полный текст, скачать вложения и пользоваться интерактивным чек-листом.</p>
+              <div class="mt-6 flex flex-wrap justify-center gap-4">
+                <button type="button" onclick="openDemoCheckout('${m.access}')" class="bg-obsidian text-ivory px-6 py-3 text-[10px] uppercase tracking-[0.18em] hover:bg-obsidian-soft transition-colors">Активировать ${escapeHtml(m.access)} (демо)</button>
+                <button type="button" onclick="navigateTo('pricing')" class="border border-obsidian/30 text-obsidian px-6 py-3 text-[10px] uppercase tracking-[0.18em] hover:bg-obsidian/5 transition-colors">Смотреть тарифы</button>
+              </div>
+            </div>
+          `}
+        </article>
+      `;
+    }
+    function toggleSave(id) {
+      const i = AppState.savedIds.indexOf(id);
+      if (i >= 0) { AppState.savedIds.splice(i, 1); showToast('Убрано из личной библиотеки'); }
+      else { AppState.savedIds.push(id); showToast('Сохранено в личную библиотеку'); }
+      persistLibrary();
+      if (AppState.currentView === 'article') renderArticle();
+    }
+    function toggleChecklistItem(articleId, index) {
+      if (!AppState.checklistState[articleId]) AppState.checklistState[articleId] = {};
+      AppState.checklistState[articleId][index] = !AppState.checklistState[articleId][index];
+      persistLibrary();
+    }
+
+    /* ============ 14. ЭКСПЕРТЫ ============ */
+    function setExpertFilter(spec) { AppState.expertFilter = spec; renderExperts(); }
+    function openExpert(id) { AppState.selectedExpertId = Number(id); navigateTo('expert'); }
+    function goToArticleFromExpert(id) { openArticle(id); }
+    function renderExperts() {
+      const active = AppState.expertFilter || 'Все';
+      const list = EXPERTS.filter(e => active === 'Все' || e.specializations.includes(active));
+      document.getElementById('app-root').innerHTML = `
+        <section class="view-transition max-w-[1440px] mx-auto px-5 sm:px-8 lg:px-12 py-12 sm:py-20">
+          <div data-reveal class="max-w-4xl">
+            <div class="text-[10px] uppercase tracking-[0.22em] text-ink-subtle mb-4">Редакция · Эксперты и авторы</div>
+            <h1 class="font-serif text-4xl sm:text-6xl leading-[0.98]">Люди, которые разбирают <span class="italic text-olive">ресторанную практику</span></h1>
+            <p class="mt-6 text-sm sm:text-base text-ink-muted leading-relaxed font-light max-w-2xl">Профили авторов и экспертов библиотеки. Часть профилей — редакционные примеры: они показывают структуру раздела и не выдаются за реальные биографии.</p>
+          </div>
+          <div class="mt-10 flex gap-3 overflow-x-auto no-scrollbar pb-3 hairline-b">
+            ${EXPERT_SPECIALIZATIONS.map(spec => `
+              <button type="button" onclick="setExpertFilter('${escapeHtml(spec).replace(/'/g, "\\'")}')"
+                class="shrink-0 text-[10px] uppercase tracking-[0.16em] px-3 py-2 border ${active === spec ? 'bg-obsidian text-ivory border-obsidian' : 'border-transparent text-ink-muted hover:text-obsidian'}">${escapeHtml(spec)}</button>
+            `).join('')}
+          </div>
+          <div class="mt-2">
+            ${list.map((expert, idx) => {
+              const pubs = expert.publications.map(id => MATERIALS.find(m => m.id === id)).filter(Boolean);
+              return `
+                <article data-reveal data-reveal-delay="${Math.min(4, (idx % 4) + 1)}" class="hairline-b py-10 sm:py-14 grid md:grid-cols-12 gap-8">
+                  <button type="button" onclick="openExpert(${expert.id})" class="md:col-span-3 photo-trigger text-left">
+                    <div class="photo-box aspect-[4/5]"><img src="${escapeHtml(expert.photo)}" alt="${escapeHtml(expert.name)}" loading="lazy"></div>
+                  </button>
+                  <div class="md:col-span-5">
+                    <div class="text-[10px] uppercase tracking-[0.2em] text-ink-subtle mb-3">${expert.specializations.map(escapeHtml).join(' · ')}</div>
+                    <h2 class="font-serif text-3xl sm:text-4xl leading-none"><button type="button" onclick="openExpert(${expert.id})" class="hover:text-olive transition-colors text-left">${escapeHtml(expert.name)}</button></h2>
+                    <div class="mt-3 text-sm text-ink-muted">${escapeHtml(expert.role)}</div>
+                    <p class="mt-5 text-sm leading-relaxed text-ink-muted font-light">${escapeHtml(expert.bio)}</p>
+                    <button type="button" onclick="openExpert(${expert.id})" class="mt-5 editorial-link text-[10px] uppercase tracking-[0.18em] text-obsidian">Открыть профиль</button>
+                  </div>
+                  <div class="md:col-span-4">
+                    <div class="text-[10px] uppercase tracking-[0.2em] text-ink-subtle mb-4">Публикации</div>
+                    ${pubs.length ? pubs.map(pub => `
+                      <button type="button" onclick="goToArticleFromExpert(${pub.id})" class="block w-full text-left py-3 hairline-b group">
+                        <div class="text-[10px] uppercase tracking-[0.16em] text-ink-subtle mb-1">${escapeHtml(pub.type)} · ${getAccessMarkHtml(pub.access)}</div>
+                        <div class="text-sm leading-snug group-hover:text-olive transition-colors">${escapeHtml(pub.title)}</div>
+                      </button>
+                    `).join('') : '<div class="text-sm text-ink-subtle">Публикации готовятся.</div>'}
+                  </div>
+                </article>
+              `;
+            }).join('')}
+          </div>
+        </section>
+      `;
+    }
+    function renderExpertProfile() {
+      const expert = EXPERTS.find(e => e.id === Number(AppState.selectedExpertId)) || EXPERTS[0];
+      const pubs = expert.publications.map(id => MATERIALS.find(m => m.id === id)).filter(Boolean);
+      document.getElementById('app-root').innerHTML = `
+        <section class="view-transition max-w-[1440px] mx-auto px-5 sm:px-8 lg:px-12 py-10 sm:py-16">
+          <button type="button" onclick="navigateTo('experts')" class="text-[10px] uppercase tracking-[0.18em] text-ink-muted hover:text-obsidian">← Все эксперты</button>
+          <div class="mt-8 grid md:grid-cols-12 gap-10 lg:gap-14">
+            <div class="md:col-span-5"><div data-reveal="image" class="photo-box aspect-[4/5]"><img src="${escapeHtml(expert.photo)}" alt="${escapeHtml(expert.name)}"></div></div>
+            <div class="md:col-span-7">
+              <div data-reveal class="text-[10px] uppercase tracking-[0.2em] text-ink-subtle mb-4">${expert.specializations.map(escapeHtml).join(' · ')}</div>
+              <h1 data-reveal data-reveal-delay="1" class="font-serif text-4xl sm:text-5xl lg:text-6xl leading-[0.98]">${escapeHtml(expert.name)}</h1>
+              <div data-reveal data-reveal-delay="2" class="mt-4 text-sm text-ink-muted">${escapeHtml(expert.role)}</div>
+              <div data-reveal data-reveal-delay="2" class="mt-6 pl-4 border-l border-wine text-[11px] uppercase tracking-[0.14em] text-ink-subtle leading-relaxed">${escapeHtml(expert.editorialNote || 'Редакционный профиль.')}</div>
+              <p data-reveal data-reveal-delay="3" class="mt-8 text-base leading-relaxed text-ink-muted font-light">${escapeHtml(expert.bio)}</p>
+              <div data-reveal class="mt-8">
+                <div class="text-[10px] uppercase tracking-[0.2em] text-ink-subtle mb-4">Область компетенции</div>
+                <div class="flex flex-wrap gap-x-4 gap-y-2 text-sm text-obsidian">${expert.competencies.map(c => `<span>${escapeHtml(c)}</span>`).join('<span class="text-ink-subtle">·</span>')}</div>
+              </div>
+              <div data-reveal class="mt-10">
+                <div class="text-[10px] uppercase tracking-[0.2em] text-ink-subtle mb-2">Публикации эксперта</div>
+                ${pubs.length ? pubs.map(pub => `
+                  <button type="button" onclick="goToArticleFromExpert(${pub.id})" class="block w-full text-left py-4 hairline-b group">
+                    <div class="flex items-baseline justify-between gap-4">
+                      <div>
+                        <div class="text-[10px] uppercase tracking-[0.16em] text-ink-subtle mb-1">${escapeHtml(pub.type)} · ${getAccessMarkHtml(pub.access)}</div>
+                        <div class="text-base leading-snug group-hover:text-olive transition-colors">${escapeHtml(pub.title)}</div>
+                      </div>
+                      <span class="text-[10px] uppercase tracking-[0.16em] text-ink-subtle shrink-0">${pub.readTime} мин</span>
+                    </div>
+                  </button>
+                `).join('') : '<div class="text-sm text-ink-subtle">Публикации готовятся.</div>'}
+              </div>
+            </div>
+          </div>
+        </section>
+      `;
+    }
+
+    /* ============ 15. ИНСТРУМЕНТЫ ============ */
+    function ensureToolsState() {
+      const defaults = {
+        foodcost: { dish: '', price: '', target: '30', rows: [{ n: '', q: '', u: 'г', p: '' }] },
+        breakeven: { fixed: '', check: '', varPct: '30', days: '30' },
+        labor: { payroll: '', revenue: '', target: '25' },
+        revenue: { seats: '', turns: '', occ: '', check: '', days: '30' }
+      };
+      if (!AppState.tl || typeof AppState.tl !== 'object') AppState.tl = {};
+      Object.keys(defaults).forEach(key => { AppState.tl[key] = Object.assign({}, defaults[key], (AppState.tl[key] && typeof AppState.tl[key] === 'object') ? AppState.tl[key] : {}); });
+      if (!Array.isArray(AppState.tl.foodcost.rows) || !AppState.tl.foodcost.rows.length) AppState.tl.foodcost.rows = [{ n: '', q: '', u: 'г', p: '' }];
+    }
+    function parseToolNumber(value) { const n = parseFloat(String(value == null ? '' : value).replace(',', '.').replace(/\s/g, '')); return Number.isFinite(n) ? n : 0; }
+    function formatMoney(value) { return new Intl.NumberFormat('ru-RU', { maximumFractionDigits: 0 }).format(value || 0) + ' ₽'; }
+    function formatPct(value) { return new Intl.NumberFormat('ru-RU', { maximumFractionDigits: 1 }).format(value || 0) + '%'; }
+    let toolsPersistTimer = null;
+    function scheduleToolsPersist() { clearTimeout(toolsPersistTimer); toolsPersistTimer = setTimeout(persistLibrary, 350); }
+    function calculateFoodcost() {
+      const fc = AppState.tl.foodcost;
+      const cost = fc.rows.reduce((sum, row) => sum + parseToolNumber(row.q) * parseToolNumber(row.p), 0);
+      const price = parseToolNumber(fc.price);
+      const target = parseToolNumber(fc.target) || 30;
+      const pct = price > 0 ? (cost / price) * 100 : 0;
+      const recommended = target > 0 ? cost / (target / 100) : 0;
+      return { cost, price, target, pct, recommended };
+    }
+    function renderFoodcostRows() {
+      const container = document.getElementById('foodcost-rows');
+      if (!container) return;
+      const rows = AppState.tl.foodcost.rows;
+      const units = ['г', 'кг', 'мл', 'л', 'шт'];
+      container.innerHTML = rows.map((row, i) => `
+        <div class="tool-row hairline-b py-3">
+          <div><label class="tool-label">Ингредиент</label><input class="tool-input" value="${escapeHtml(row.n)}" placeholder="Название" oninput="onFoodcostRowInput(${i}, 'n', this.value)"></div>
+          <div><label class="tool-label">Кол-во</label><input class="tool-input" inputmode="decimal" value="${escapeHtml(row.q)}" placeholder="0" oninput="onFoodcostRowInput(${i}, 'q', this.value)"></div>
+          <div><label class="tool-label">Ед.</label><select class="tool-input" onchange="onFoodcostRowInput(${i}, 'u', this.value)">${units.map(u => `<option value="${u}" ${row.u === u ? 'selected' : ''}>${u}</option>`).join('')}</select></div>
+          <div><label class="tool-label">Цена за ед., ₽</label><input class="tool-input" inputmode="decimal" value="${escapeHtml(row.p)}" placeholder="0" oninput="onFoodcostRowInput(${i}, 'p', this.value)"></div>
+          <div class="pb-1"><button type="button" onclick="removeFoodcostRow(${i})" class="text-[10px] uppercase tracking-[0.16em] text-ink-subtle hover:text-wine py-2" ${rows.length <= 1 ? 'disabled' : ''}>Удалить</button></div>
+        </div>
+      `).join('');
+    }
+    function onFoodcostInput(field, value) { AppState.tl.foodcost[field] = value; updateFoodcostResult(); }
+    function onFoodcostRowInput(index, field, value) { const row = AppState.tl.foodcost.rows[index]; if (!row) return; row[field] = value; updateFoodcostResult(); }
+    function addFoodcostRow() { AppState.tl.foodcost.rows.push({ n: '', q: '', u: 'г', p: '' }); renderFoodcostRows(); updateFoodcostResult(); }
+    function removeFoodcostRow(index) { if (AppState.tl.foodcost.rows.length <= 1) return; AppState.tl.foodcost.rows.splice(index, 1); renderFoodcostRows(); updateFoodcostResult(); }
+    function updateFoodcostResult() {
+      const el = document.getElementById('foodcost-result');
+      if (!el) return;
+      const r = calculateFoodcost();
+      const pctLabel = r.price > 0 ? formatPct(r.pct) : '—';
+      const pctClass = r.price > 0 && r.pct > r.target ? 'text-wine' : 'text-olive';
+      el.innerHTML = `
+        <div class="space-y-4 tool-result">
+          <div><div class="text-[10px] uppercase tracking-[0.18em] text-ink-subtle">Себестоимость блюда</div><div class="font-serif text-3xl mt-1">${formatMoney(r.cost)}</div></div>
+          <div class="hairline-t pt-4 grid grid-cols-2 gap-4">
+            <div><div class="text-[10px] uppercase tracking-[0.18em] text-ink-subtle">Food Cost</div><div class="font-serif text-2xl mt-1 ${pctClass}">${pctLabel}</div></div>
+            <div><div class="text-[10px] uppercase tracking-[0.18em] text-ink-subtle">Целевой</div><div class="font-serif text-2xl mt-1">${formatPct(r.target)}</div></div>
+          </div>
+          <div class="hairline-t pt-4"><div class="text-[10px] uppercase tracking-[0.18em] text-ink-subtle">Рекомендуемая цена</div><div class="font-serif text-3xl mt-1">${r.recommended ? formatMoney(r.recommended) : '—'}</div></div>
+        </div>
+      `;
+      scheduleToolsPersist();
+    }
+    function updateBreakeven() {
+      const b = AppState.tl.breakeven;
+      const fixedEl = document.getElementById('be-fixed'); if (!fixedEl) return;
+      b.fixed = fixedEl.value; b.check = document.getElementById('be-check').value; b.varPct = document.getElementById('be-var').value; b.days = document.getElementById('be-days').value;
+      const fixed = parseToolNumber(b.fixed), check = parseToolNumber(b.check), varPct = parseToolNumber(b.varPct), days = parseToolNumber(b.days) || 30;
+      const margin = 1 - varPct / 100;
+      const el = document.getElementById('breakeven-result'); if (!el) return;
+      if (margin <= 0) { el.innerHTML = `<div class="text-sm text-wine leading-relaxed">Переменные расходы должны быть меньше 100% выручки.</div>`; scheduleToolsPersist(); return; }
+      const revenue = fixed / margin;
+      const revenueDay = days > 0 ? revenue / days : 0;
+      const guestsDay = check > 0 && days > 0 ? revenue / check / days : 0;
+      el.innerHTML = `
+        <div class="space-y-4 tool-result">
+          <div><div class="text-[10px] uppercase tracking-[0.18em] text-ink-subtle">Выручка в точке безубыточности</div><div class="font-serif text-3xl mt-1">${formatMoney(revenue)}</div></div>
+          <div class="hairline-t pt-4 grid grid-cols-2 gap-4">
+            <div><div class="text-[10px] uppercase tracking-[0.18em] text-ink-subtle">Нужно в день</div><div class="font-serif text-2xl mt-1">${formatMoney(revenueDay)}</div></div>
+            <div><div class="text-[10px] uppercase tracking-[0.18em] text-ink-subtle">Гостей в день</div><div class="font-serif text-2xl mt-1">${Math.ceil(guestsDay)}</div></div>
+          </div>
+        </div>
+      `;
+      scheduleToolsPersist();
+    }
+    function updateLabor() {
+      const l = AppState.tl.labor;
+      const payrollEl = document.getElementById('lab-payroll'); if (!payrollEl) return;
+      l.payroll = payrollEl.value; l.revenue = document.getElementById('lab-revenue').value; l.target = document.getElementById('lab-target').value;
+      const payroll = parseToolNumber(l.payroll), revenue = parseToolNumber(l.revenue), target = parseToolNumber(l.target);
+      const pct = revenue > 0 ? (payroll / revenue) * 100 : 0;
+      const gap = target - pct;
+      const el = document.getElementById('labor-result'); if (!el) return;
+      el.innerHTML = `
+        <div class="space-y-4 tool-result">
+          <div><div class="text-[10px] uppercase tracking-[0.18em] text-ink-subtle">ФОТ к выручке</div><div class="font-serif text-3xl mt-1 ${pct > target && target > 0 ? 'text-wine' : 'text-olive'}">${revenue > 0 ? formatPct(pct) : '—'}</div></div>
+          <div class="hairline-t pt-4"><div class="text-[10px] uppercase tracking-[0.18em] text-ink-subtle">Целевой коридор</div><div class="font-serif text-2xl mt-1">${formatPct(target)}</div></div>
+          <div class="hairline-t pt-4 text-sm text-ink-muted leading-relaxed">${revenue > 0 && target > 0 ? (gap >= 0 ? `Запас до цели: ${formatPct(gap)}.` : `Превышение цели: ${formatPct(Math.abs(gap))}.`) : 'Введите ФОТ и выручку за период.'}</div>
+        </div>
+      `;
+      scheduleToolsPersist();
+    }
+    function updateRevenue() {
+      const rv = AppState.tl.revenue;
+      const seatsEl = document.getElementById('rev-seats'); if (!seatsEl) return;
+      rv.seats = seatsEl.value; rv.turns = document.getElementById('rev-turns').value; rv.occ = document.getElementById('rev-occ').value;
+      rv.check = document.getElementById('rev-check').value; rv.days = document.getElementById('rev-days').value;
+      const seats = parseToolNumber(rv.seats), turns = parseToolNumber(rv.turns), occ = parseToolNumber(rv.occ) / 100;
+      const check = parseToolNumber(rv.check), days = parseToolNumber(rv.days) || 30;
+      const monthly = seats * turns * occ * check * days;
+      const daily = days > 0 ? monthly / days : 0;
+      const guests = seats * turns * occ * days;
+      const el = document.getElementById('revenue-result'); if (!el) return;
+      el.innerHTML = `
+        <div class="space-y-4 tool-result">
+          <div><div class="text-[10px] uppercase tracking-[0.18em] text-ink-subtle">Прогноз выручки за период</div><div class="font-serif text-3xl mt-1">${formatMoney(monthly)}</div></div>
+          <div class="hairline-t pt-4 grid grid-cols-2 gap-4">
+            <div><div class="text-[10px] uppercase tracking-[0.18em] text-ink-subtle">В день</div><div class="font-serif text-2xl mt-1">${formatMoney(daily)}</div></div>
+            <div><div class="text-[10px] uppercase tracking-[0.18em] text-ink-subtle">Гостей за период</div><div class="font-serif text-2xl mt-1">${Math.round(guests)}</div></div>
+          </div>
+        </div>
+      `;
+      scheduleToolsPersist();
+    }
+    function recalcTool(key) { if (key === 'foodcost') updateFoodcostResult(); if (key === 'breakeven') updateBreakeven(); if (key === 'labor') updateLabor(); if (key === 'revenue') updateRevenue(); showToast('Расчёт обновлён'); }
+    function resetTools(key) {
+      ensureToolsState();
+      if (key === 'foodcost') AppState.tl.foodcost = { dish: '', price: '', target: '30', rows: [{ n: '', q: '', u: 'г', p: '' }] };
+      if (key === 'breakeven') AppState.tl.breakeven = { fixed: '', check: '', varPct: '30', days: '30' };
+      if (key === 'labor') AppState.tl.labor = { payroll: '', revenue: '', target: '25' };
+      if (key === 'revenue') AppState.tl.revenue = { seats: '', turns: '', occ: '', check: '', days: '30' };
+      renderTools();
+      showToast('Инструмент сброшен');
+      persistLibrary();
+    }
+    function renderTools() {
+      ensureToolsState();
+      const fc = AppState.tl.foodcost, be = AppState.tl.breakeven, lab = AppState.tl.labor, rev = AppState.tl.revenue;
+      document.getElementById('app-root').innerHTML = `
+        <section class="view-transition max-w-[1440px] mx-auto px-5 sm:px-8 lg:px-12 py-12 sm:py-20">
+          <div data-reveal class="max-w-4xl">
+            <div class="text-[10px] uppercase tracking-[0.22em] text-ink-subtle mb-4">Практика · Редакционные инструменты</div>
+            <h1 class="font-serif text-4xl sm:text-6xl leading-[0.98]">Инструменты <span class="italic text-olive">ресторанной экономики</span></h1>
+            <p class="mt-6 text-sm sm:text-base text-ink-muted leading-relaxed font-light max-w-2xl">Четыре рабочих калькулятора для владельца, управляющего и шеф-повара. Расчёты выполняются локально в браузере, данные сохраняются в вашей библиотеке.</p>
+          </div>
+          <nav class="mt-10 flex flex-wrap gap-x-6 gap-y-2 text-[10px] uppercase tracking-[0.16em] text-ink-muted hairline-t hairline-b py-3">
+            <a href="#tool-foodcost" class="hover:text-obsidian">01 · Food Cost</a>
+            <a href="#tool-breakeven" class="hover:text-obsidian">02 · Безубыточность</a>
+            <a href="#tool-labor" class="hover:text-obsidian">03 · Labor Cost</a>
+            <a href="#tool-revenue" class="hover:text-obsidian">04 · Выручка по посадке</a>
+          </nav>
+
+          <section id="tool-foodcost" class="pt-12">
+            <div class="grid lg:grid-cols-12 gap-10">
+              <div data-reveal class="lg:col-span-7">
+                <div class="flex items-baseline justify-between hairline-b pb-3 mb-6">
+                  <h2 class="font-serif text-3xl sm:text-4xl">01 · Калькулятор Food Cost</h2>
+                  <button type="button" onclick="resetTools('foodcost')" class="text-[10px] uppercase tracking-[0.16em] text-ink-subtle hover:text-wine">Сбросить</button>
+                </div>
+                <label class="tool-label">Название блюда</label>
+                <input class="tool-input" value="${escapeHtml(fc.dish)}" placeholder="Например, тартар из говядины" oninput="onFoodcostInput('dish', this.value)">
+                <div class="mt-6 flex items-center justify-between">
+                  <div class="tool-label">Ингредиенты</div>
+                  <button type="button" onclick="addFoodcostRow()" class="text-[10px] uppercase tracking-[0.16em] text-obsidian hover:text-olive">+ Добавить строку</button>
+                </div>
+                <div id="foodcost-rows" class="mt-2"></div>
+                <div class="grid sm:grid-cols-2 gap-6 mt-6">
+                  <div><label class="tool-label">Продажная цена, ₽</label><input class="tool-input" inputmode="decimal" value="${escapeHtml(fc.price)}" placeholder="0" oninput="onFoodcostInput('price', this.value)"></div>
+                  <div><label class="tool-label">Целевой Food Cost, %</label><input class="tool-input" inputmode="decimal" value="${escapeHtml(fc.target)}" placeholder="30" oninput="onFoodcostInput('target', this.value)"></div>
+                </div>
+                <div class="mt-6 flex gap-4">
+                  <button type="button" onclick="recalcTool('foodcost')" class="bg-obsidian text-ivory px-5 py-3 text-[10px] uppercase tracking-[0.18em] hover:bg-obsidian-soft transition-colors">Рассчитать</button>
+                  <button type="button" onclick="resetTools('foodcost')" class="text-[10px] uppercase tracking-[0.18em] text-ink-muted hover:text-obsidian">Очистить</button>
+                </div>
+              </div>
+              <aside data-reveal class="lg:col-span-5">
+                <div class="hairline-all p-6 bg-linen/40">
+                  <div class="text-[10px] uppercase tracking-[0.2em] text-ink-subtle">Результат</div>
+                  <div id="foodcost-result" class="mt-4"></div>
+                  <p class="mt-6 text-[11px] text-ink-subtle leading-relaxed">Food Cost % = себестоимость / продажная цена × 100.<br>Рекомендуемая цена = себестоимость / целевой Food Cost.</p>
+                </div>
+              </aside>
+            </div>
+          </section>
+
+          <section id="tool-breakeven" class="pt-16 mt-16 hairline-t">
+            <div class="grid lg:grid-cols-12 gap-10">
+              <div data-reveal class="lg:col-span-7">
+                <div class="flex items-baseline justify-between hairline-b pb-3 mb-6">
+                  <h2 class="font-serif text-3xl sm:text-4xl">02 · Точка безубыточности</h2>
+                  <button type="button" onclick="resetTools('breakeven')" class="text-[10px] uppercase tracking-[0.16em] text-ink-subtle hover:text-wine">Сбросить</button>
+                </div>
+                <div class="grid sm:grid-cols-2 gap-6">
+                  <div><label class="tool-label">Постоянные расходы, ₽</label><input id="be-fixed" class="tool-input" inputmode="decimal" value="${escapeHtml(be.fixed)}" placeholder="0" oninput="updateBreakeven()"></div>
+                  <div><label class="tool-label">Средний чек, ₽</label><input id="be-check" class="tool-input" inputmode="decimal" value="${escapeHtml(be.check)}" placeholder="0" oninput="updateBreakeven()"></div>
+                  <div><label class="tool-label">Переменные расходы, %</label><input id="be-var" class="tool-input" inputmode="decimal" value="${escapeHtml(be.varPct)}" placeholder="30" oninput="updateBreakeven()"></div>
+                  <div><label class="tool-label">Дней в периоде</label><input id="be-days" class="tool-input" inputmode="decimal" value="${escapeHtml(be.days)}" placeholder="30" oninput="updateBreakeven()"></div>
+                </div>
+              </div>
+              <aside data-reveal class="lg:col-span-5">
+                <div class="hairline-all p-6 bg-linen/40">
+                  <div class="text-[10px] uppercase tracking-[0.2em] text-ink-subtle">Результат</div>
+                  <div id="breakeven-result" class="mt-4"></div>
+                  <p class="mt-6 text-[11px] text-ink-subtle leading-relaxed">Выручка в точке безубыточности = постоянные расходы / (1 − доля переменных расходов).</p>
+                </div>
+              </aside>
+            </div>
+          </section>
+
+          <section id="tool-labor" class="pt-16 mt-16 hairline-t">
+            <div class="grid lg:grid-cols-12 gap-10">
+              <div data-reveal class="lg:col-span-7">
+                <div class="flex items-baseline justify-between hairline-b pb-3 mb-6">
+                  <h2 class="font-serif text-3xl sm:text-4xl">03 · Labor Cost</h2>
+                  <button type="button" onclick="resetTools('labor')" class="text-[10px] uppercase tracking-[0.16em] text-ink-subtle hover:text-wine">Сбросить</button>
+                </div>
+                <div class="grid sm:grid-cols-3 gap-6">
+                  <div><label class="tool-label">ФОТ за период, ₽</label><input id="lab-payroll" class="tool-input" inputmode="decimal" value="${escapeHtml(lab.payroll)}" placeholder="0" oninput="updateLabor()"></div>
+                  <div><label class="tool-label">Выручка, ₽</label><input id="lab-revenue" class="tool-input" inputmode="decimal" value="${escapeHtml(lab.revenue)}" placeholder="0" oninput="updateLabor()"></div>
+                  <div><label class="tool-label">Целевой ФОТ, %</label><input id="lab-target" class="tool-input" inputmode="decimal" value="${escapeHtml(lab.target)}" placeholder="25" oninput="updateLabor()"></div>
+                </div>
+              </div>
+              <aside data-reveal class="lg:col-span-5">
+                <div class="hairline-all p-6 bg-linen/40">
+                  <div class="text-[10px] uppercase tracking-[0.2em] text-ink-subtle">Результат</div>
+                  <div id="labor-result" class="mt-4"></div>
+                  <p class="mt-6 text-[11px] text-ink-subtle leading-relaxed">Labor Cost % = ФОТ / выручка × 100. Здоровый ориентир для ресторана — 22–26%.</p>
+                </div>
+              </aside>
+            </div>
+          </section>
+
+          <section id="tool-revenue" class="pt-16 mt-16 hairline-t">
+            <div class="grid lg:grid-cols-12 gap-10">
+              <div data-reveal class="lg:col-span-7">
+                <div class="flex items-baseline justify-between hairline-b pb-3 mb-6">
+                  <h2 class="font-serif text-3xl sm:text-4xl">04 · Выручка по посадочным местам</h2>
+                  <button type="button" onclick="resetTools('revenue')" class="text-[10px] uppercase tracking-[0.16em] text-ink-subtle hover:text-wine">Сбросить</button>
+                </div>
+                <div class="grid sm:grid-cols-2 gap-6">
+                  <div><label class="tool-label">Посадочных мест</label><input id="rev-seats" class="tool-input" inputmode="decimal" value="${escapeHtml(rev.seats)}" placeholder="0" oninput="updateRevenue()"></div>
+                  <div><label class="tool-label">Оборотов в день</label><input id="rev-turns" class="tool-input" inputmode="decimal" value="${escapeHtml(rev.turns)}" placeholder="0" oninput="updateRevenue()"></div>
+                  <div><label class="tool-label">Загрузка, %</label><input id="rev-occ" class="tool-input" inputmode="decimal" value="${escapeHtml(rev.occ)}" placeholder="0" oninput="updateRevenue()"></div>
+                  <div><label class="tool-label">Средний чек, ₽</label><input id="rev-check" class="tool-input" inputmode="decimal" value="${escapeHtml(rev.check)}" placeholder="0" oninput="updateRevenue()"></div>
+                  <div><label class="tool-label">Дней в периоде</label><input id="rev-days" class="tool-input" inputmode="decimal" value="${escapeHtml(rev.days)}" placeholder="30" oninput="updateRevenue()"></div>
+                </div>
+              </div>
+              <aside data-reveal class="lg:col-span-5">
+                <div class="hairline-all p-6 bg-linen/40">
+                  <div class="text-[10px] uppercase tracking-[0.2em] text-ink-subtle">Результат</div>
+                  <div id="revenue-result" class="mt-4"></div>
+                  <p class="mt-6 text-[11px] text-ink-subtle leading-relaxed">Выручка = места × обороты × загрузка × средний чек × дни.</p>
+                </div>
+              </aside>
+            </div>
+          </section>
+        </section>
+      `;
+      renderFoodcostRows();
+      updateFoodcostResult();
+      updateBreakeven();
+      updateLabor();
+      updateRevenue();
+    }
+
+    /* ============ 16. ЧЕК-ЛИСТЫ ============ */
+    function renderChecklists() {
+      const cl = MATERIALS.filter(m => Array.isArray(m.checklist) && m.checklist.length);
+      document.getElementById('app-root').innerHTML = `
+        <section class="view-transition max-w-[1440px] mx-auto px-5 sm:px-8 lg:px-12 py-12 sm:py-20">
+          <div data-reveal class="max-w-4xl">
+            <div class="text-[10px] uppercase tracking-[0.22em] text-ink-subtle mb-4">Практика · Генератор чек-листов</div>
+            <h1 class="font-serif text-4xl sm:text-6xl leading-[0.98]">Интерактивные <span class="italic text-olive">чек-листы</span></h1>
+            <p class="mt-6 text-sm sm:text-base text-ink-muted leading-relaxed font-light max-w-2xl">Рабочие списки для смены, кухни и сервиса. Отметки сохраняются в личной библиотеке и синхронизируются с материалом.</p>
+          </div>
+          <div class="mt-10 grid md:grid-cols-2 gap-x-10 gap-y-12">
+            ${cl.map((m, idx) => {
+              const st = AppState.checklistState[m.id] || {};
+              const done = m.checklist.filter((_, i) => st[i]).length;
+              return `
+                <article data-reveal data-reveal-delay="${Math.min(4, (idx % 4) + 1)}" class="hairline-all p-6">
+                  <div class="flex items-start justify-between gap-4">
+                    <div>
+                      <div class="text-[10px] uppercase tracking-[0.16em] text-ink-subtle mb-2">${escapeHtml(m.category)}</div>
+                      <h2 class="font-serif text-2xl">${escapeHtml(m.title)}</h2>
+                    </div>
+                    <button type="button" onclick="openArticle(${m.id})" class="text-[10px] uppercase tracking-[0.16em] text-ink-subtle hover:text-obsidian shrink-0">Открыть →</button>
+                  </div>
+                  <div class="mt-3 text-[11px] uppercase tracking-[0.16em] text-ink-subtle">Прогресс: ${done} / ${m.checklist.length}</div>
+                  <div class="mt-4 space-y-1">
+                    ${m.checklist.map((item, i) => `
+                      <label class="flex items-start gap-3 py-1.5 cursor-pointer">
+                        <input type="checkbox" ${st[i] ? 'checked' : ''} onchange="toggleChecklistItem(${m.id}, ${i}); renderChecklists();" class="mt-1 accent-olive">
+                        <span class="text-sm ${st[i] ? 'text-ink-subtle line-through' : 'text-ink-muted'}">${escapeHtml(item)}</span>
+                      </label>
+                    `).join('')}
+                  </div>
+                </article>
+              `;
+            }).join('')}
+          </div>
+        </section>
+      `;
+    }
+
+    /* ============ 17. ТАРИФЫ ============ */
+    function renderPricing() {
+      const plans = [PLANS.FREE, PLANS.PRO, PLANS.PREMIUM];
+      document.getElementById('app-root').innerHTML = `
+        <section class="view-transition max-w-[1440px] mx-auto px-5 sm:px-8 lg:px-12 py-12 sm:py-20">
+          <div data-reveal class="max-w-4xl">
+            <div class="text-[10px] uppercase tracking-[0.22em] text-ink-subtle mb-4">Членство · Тарифные планы</div>
+            <h1 class="font-serif text-4xl sm:text-6xl leading-[0.98]">Три формата <span class="italic text-olive">участия</span></h1>
+            <p class="mt-6 text-sm sm:text-base text-ink-muted leading-relaxed font-light max-w-2xl">Все тарифы — демонстрационные. Реальное списание не выполняется, доступ активируется в демо-режиме.</p>
+          </div>
+          <div class="mt-12 grid md:grid-cols-3 gap-6">
+            ${plans.map((p, i) => `
+              <div data-reveal data-reveal-delay="${i + 1}" class="hairline-all p-7 ${p.id === 'PRO' ? 'bg-obsidian text-ivory' : 'bg-linen/40'}">
+                <div class="text-[10px] uppercase tracking-[0.2em] ${p.id === 'PRO' ? 'text-ivory/60' : 'text-ink-subtle'}">${escapeHtml(p.label)}</div>
+                <div class="mt-2 font-serif text-4xl">${escapeHtml(p.name)}</div>
+                <div class="mt-4 font-serif text-3xl">${escapeHtml(p.priceLabel)} <span class="text-sm font-sans ${p.id === 'PRO' ? 'text-ivory/60' : 'text-ink-subtle'}">${escapeHtml(p.period)}</span></div>
+                <p class="mt-4 text-sm leading-relaxed font-light ${p.id === 'PRO' ? 'text-ivory/75' : 'text-ink-muted'}">${escapeHtml(p.tagline)}</p>
+                <ul class="mt-5 space-y-2 text-sm font-light ${p.id === 'PRO' ? 'text-ivory/85' : 'text-ink-muted'}">
+                  ${p.features.map(f => `<li class="flex gap-2"><span class="shrink-0">·</span><span>${escapeHtml(f)}</span></li>`).join('')}
+                </ul>
+                <button type="button" onclick="${p.id === 'FREE' ? 'openDemoCabinetQuick()' : `openDemoCheckout('${p.id}')`}" class="mt-6 w-full py-3 text-[10px] uppercase tracking-[0.18em] ${p.id === 'PRO' ? 'bg-ivory text-obsidian hover:bg-linen' : 'bg-obsidian text-ivory hover:bg-obsidian-soft'} transition-colors">${p.id === 'FREE' ? 'Начать бесплатно' : 'Активировать (демо)'}</button>
+              </div>
+            `).join('')}
+          </div>
+        </section>
+      `;
+    }
+
+    /* ============ 18. О ПРОЕКТЕ ============ */
+    function renderAbout() {
+      document.getElementById('app-root').innerHTML = `
+        <section class="view-transition max-w-[1100px] mx-auto px-5 sm:px-8 lg:px-12 py-12 sm:py-20">
+          <div data-reveal class="max-w-4xl">
+            <div class="text-[10px] uppercase tracking-[0.22em] text-ink-subtle mb-4">О клубе</div>
+            <h1 class="font-serif text-4xl sm:text-6xl leading-[0.98]">Профессиональное издание <span class="italic text-olive">для ресторанной индустрии</span></h1>
+            <p class="mt-6 text-base text-ink-muted leading-relaxed font-light">РестоХаб — закрытая библиотека стандартов, регламентов, шаблонов и редакционных материалов для владельцев, управляющих, шеф-поваров и администраторов зала. Мы собираем воспроизводимые практики, а не абстрактные советы.</p>
+          </div>
+          <div class="mt-12 grid md:grid-cols-3 gap-8 hairline-t pt-10">
+            <div data-reveal><div class="font-serif text-5xl">18</div><div class="mt-2 text-[10px] uppercase tracking-[0.18em] text-ink-subtle">Кураторских материалов</div><p class="mt-3 text-sm text-ink-muted font-light leading-relaxed">От ежедневного дашборда управляющего до полного комплекта журналов Роспотребнадзора.</p></div>
+            <div data-reveal data-reveal-delay="1"><div class="font-serif text-5xl">7</div><div class="mt-2 text-[10px] uppercase tracking-[0.18em] text-ink-subtle">Направлений</div><p class="mt-3 text-sm text-ink-muted font-light leading-relaxed">Управление, персонал, финансы, сервис, маркетинг, кухня, документы.</p></div>
+            <div data-reveal data-reveal-delay="2"><div class="font-serif text-5xl">4</div><div class="mt-2 text-[10px] uppercase tracking-[0.18em] text-ink-subtle">Рабочих инструмента</div><p class="mt-3 text-sm text-ink-muted font-light leading-relaxed">Food Cost, точка безубыточности, Labor Cost и прогноз выручки по посадке.</p></div>
+          </div>
+          <div data-reveal class="mt-12 pl-5 border-l-2 border-wine py-1">
+            <div class="text-[10px] uppercase tracking-[0.2em] text-wine mb-2">Демонстрационное издание</div>
+            <p class="text-sm text-ink-muted font-light leading-relaxed">Платёжные сценарии, личный кабинет и подписки работают в демо-режиме. Реальные списания не выполняются. Часть профилей экспертов — редакционные примеры.</p>
+          </div>
+        </section>
+      `;
+    }
+
+    /* ============ 19. КЕЙСЫ ============ */
+    function renderCases() {
+      document.getElementById('app-root').innerHTML = `
+        <section class="view-transition max-w-[1440px] mx-auto px-5 sm:px-8 lg:px-12 py-12 sm:py-20">
+          <div data-reveal class="max-w-4xl">
+            <div class="text-[10px] uppercase tracking-[0.22em] text-ink-subtle mb-4">Кейсы · Редакционные примеры</div>
+            <h1 class="font-serif text-4xl sm:text-6xl leading-[0.98]">Кейсы <span class="italic text-olive">ресторанного бизнеса</span></h1>
+            <p class="mt-6 text-sm sm:text-base text-ink-muted leading-relaxed font-light max-w-2xl">Редакционные примеры, иллюстрирующие системные изменения в операционке, экономике и команде. Мы не публикуем выдуманные результаты и не выдаём их за реальные.</p>
+          </div>
+          <div class="mt-10 space-y-14">
+            ${CASES.map((c, idx) => `
+              <article data-reveal data-reveal-delay="${Math.min(4, (idx % 4) + 1)}" class="grid md:grid-cols-12 gap-8 hairline-b pb-14">
+                <button type="button" onclick="AppState.selectedCaseId=${c.id}; navigateTo('case')" class="md:col-span-5 photo-trigger text-left">
+                  <div class="photo-box aspect-[4/3]"><img src="${c.image}" alt="${escapeHtml(c.title)}" loading="lazy"></div>
+                </button>
+                <div class="md:col-span-7">
+                  <div class="text-[10px] uppercase tracking-[0.18em] text-ink-subtle mb-3">${escapeHtml(c.sector)}</div>
+                  <h2 class="font-serif text-2xl sm:text-3xl leading-snug">
+                    <button type="button" onclick="AppState.selectedCaseId=${c.id}; navigateTo('case')" class="text-left hover:text-olive transition-colors">${escapeHtml(c.title)}</button>
+                  </h2>
+                  <div class="mt-3 font-serif text-2xl text-olive">${escapeHtml(c.metric)}</div>
+                  <p class="mt-4 text-sm text-ink-muted font-light leading-relaxed">${escapeHtml(c.summary)}</p>
+                  <button type="button" onclick="AppState.selectedCaseId=${c.id}; navigateTo('case')" class="mt-5 editorial-link text-[10px] uppercase tracking-[0.18em] text-obsidian">Открыть кейс</button>
+                </div>
+              </article>
+            `).join('')}
+          </div>
+        </section>
+      `;
+    }
+    function renderCase() {
+      const c = CASES.find(x => x.id === Number(AppState.selectedCaseId)) || CASES[0];
+      const related = (c.related || []).map(id => MATERIALS.find(m => m.id === id)).filter(Boolean);
+      document.getElementById('app-root').innerHTML = `
+        <section class="view-transition max-w-[1100px] mx-auto px-5 sm:px-8 lg:px-12 py-10 sm:py-16">
+          <button type="button" onclick="navigateTo('cases')" class="text-[10px] uppercase tracking-[0.18em] text-ink-muted hover:text-obsidian">← Все кейсы</button>
+          <div data-reveal class="mt-8 text-[10px] uppercase tracking-[0.2em] text-ink-subtle">${escapeHtml(c.sector)}</div>
+          <h1 data-reveal data-reveal-delay="1" class="mt-3 font-serif text-3xl sm:text-4xl lg:text-5xl leading-[1.05]">${escapeHtml(c.title)}</h1>
+          <div data-reveal="image" class="mt-6 photo-box aspect-[16/9]"><img src="${c.image}" alt="${escapeHtml(c.title)}"></div>
+          <div class="mt-8 grid md:grid-cols-12 gap-8">
+            <div class="md:col-span-8">
+              <div data-reveal class="pl-5 border-l-2 border-wine py-1 mb-6">
+                <div class="text-[10px] uppercase tracking-[0.2em] text-wine mb-1">Редакционный пример</div>
+                <p class="text-sm text-ink-muted leading-relaxed font-light">${escapeHtml(c.summary)}</p>
+              </div>
+              <p data-reveal class="text-base text-ink-muted leading-relaxed font-light">Кейс иллюстрирует применение материалов библиотеки на практике. Он не содержит персональных данных и не является отзывом реального клиента.</p>
+            </div>
+            <aside class="md:col-span-4">
+              <div data-reveal class="hairline-all p-5">
+                <div class="text-[10px] uppercase tracking-[0.2em] text-ink-subtle mb-2">Ключевой результат</div>
+                <div class="font-serif text-3xl text-olive">${escapeHtml(c.metric)}</div>
+              </div>
+              ${related.length ? `
+                <div data-reveal class="mt-6 hairline-all p-5">
+                  <div class="text-[10px] uppercase tracking-[0.2em] text-ink-subtle mb-3">Связанные материалы</div>
+                  ${related.map(m => `
+                    <button type="button" onclick="openArticle(${m.id})" class="block w-full text-left py-3 hairline-b group">
+                      <div class="text-[10px] uppercase tracking-[0.16em] text-ink-subtle mb-1">${escapeHtml(m.type)} · ${getAccessMarkHtml(m.access)}</div>
+                      <div class="text-sm leading-snug group-hover:text-olive transition-colors">${escapeHtml(m.title)}</div>
+                    </button>
+                  `).join('')}
+                </div>
+              ` : ''}
+            </aside>
+          </div>
+        </section>
+      `;
+    }
+
+    /* ============ 20. КАБИНЕТ ============ */
+    function renderCabinet() {
+      const saved = AppState.savedIds.map(id => MATERIALS.find(m => m.id === id)).filter(Boolean);
+      const tab = AppState.cabinetTab;
+      document.getElementById('app-root').innerHTML = `
+        <section class="view-transition max-w-[1440px] mx-auto px-5 sm:px-8 lg:px-12 py-12 sm:py-20">
+          <div data-reveal class="flex flex-wrap items-end justify-between gap-6">
+            <div>
+              <div class="text-[10px] uppercase tracking-[0.22em] text-ink-subtle mb-3">Личный кабинет · ${escapeHtml(AppState.user.role)}</div>
+              <h1 class="font-serif text-4xl sm:text-5xl leading-[0.98]">${escapeHtml(AppState.user.name)}</h1>
+              <div class="mt-3 text-sm text-ink-muted">Тариф: <span class="uppercase tracking-[0.14em] text-obsidian">${escapeHtml(AppState.user.plan)}</span> · ${AppState.user.autoRenew ? 'автопродление (демо)' : 'без автопродления'} · след. платёж: ${escapeHtml(AppState.user.nextBillingDate)}</div>
+            </div>
+            <button type="button" onclick="navigateTo('pricing')" class="border border-obsidian/30 text-obsidian px-5 py-3 text-[10px] uppercase tracking-[0.18em] hover:bg-obsidian/5 transition-colors">Сменить тариф</button>
+          </div>
+          <nav class="mt-10 flex gap-6 text-[10px] uppercase tracking-[0.16em] hairline-b pb-3">
+            <button type="button" onclick="AppState.cabinetTab='sections'; renderCabinet()" class="${tab === 'sections' ? 'text-obsidian' : 'text-ink-muted hover:text-obsidian'}">Разделы</button>
+            <button type="button" onclick="AppState.cabinetTab='saved'; renderCabinet()" class="${tab === 'saved' ? 'text-obsidian' : 'text-ink-muted hover:text-obsidian'}">Моя библиотека (${saved.length})</button>
+            <button type="button" onclick="AppState.cabinetTab='payments'; renderCabinet()" class="${tab === 'payments' ? 'text-obsidian' : 'text-ink-muted hover:text-obsidian'}">Платежи</button>
+          </nav>
+          <div class="mt-8">
+            ${tab === 'sections' ? `
+              <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                ${CATEGORIES.map((c, i) => `
+                  <button data-reveal data-reveal-delay="${Math.min(4, (i % 4) + 1)}" type="button" onclick="AppState.filters.category='${escapeHtml(c.id).replace(/'/g, "\\'")}'; AppState.filters.search=''; navigateTo('catalog')" class="text-left hairline-all p-5 hover:bg-linen/40 transition-colors">
+                    <div class="text-[10px] uppercase tracking-[0.16em] text-ink-subtle mb-2">${c.num}</div>
+                    <div class="font-serif text-xl">${escapeHtml(c.id)}</div>
+                    <p class="mt-2 text-sm text-ink-muted font-light leading-relaxed">${escapeHtml(c.desc)}</p>
+                  </button>
+                `).join('')}
+              </div>
+            ` : tab === 'saved' ? `
+              ${saved.length === 0 ? '<div class="text-sm text-ink-muted">Здесь появятся материалы, сохранённые в библиотеку.</div>' : `
+                <div class="grid sm:grid-cols-2 gap-x-10 gap-y-14">
+                  ${saved.map((m, i) => renderMaterialCard(m, i % 4 + 1)).join('')}
+                </div>
+              `}
+            ` : `
+              <div class="space-y-3">
+                ${AppState.paymentHistory.length === 0 ? '<div class="text-sm text-ink-muted">Демонстрационных платежей пока нет.</div>' : AppState.paymentHistory.map(p => `
+                  <div class="flex flex-wrap items-baseline justify-between gap-4 hairline-b py-4">
+                    <div>
+                      <div class="text-sm">${escapeHtml(p.plan)} · ${escapeHtml(p.date)}</div>
+                      <div class="text-[10px] uppercase tracking-[0.16em] text-ink-subtle mt-1">${escapeHtml(p.id)}</div>
+                    </div>
+                    <div class="text-right">
+                      <div class="font-serif text-xl">${escapeHtml(p.amount)}</div>
+                      <div class="text-[10px] uppercase tracking-[0.16em] text-olive mt-1">${escapeHtml(p.status)}</div>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            `}
+          </div>
+        </section>
+      `;
+    }
+
+    /* ============ 21. ФУТЕР, ИНИЦИАЛИЗАЦИЯ ============ */
+    function renderFooterCategories() {
+      const el = document.getElementById('footer-categories');
+      if (!el) return;
+      el.innerHTML = CATEGORIES.map(c => `<li><button type="button" onclick="AppState.filters.category='${escapeHtml(c.id).replace(/'/g, "\\'")}'; AppState.filters.search=''; navigateTo('catalog')" class="hover:text-ivory transition-colors text-left">${escapeHtml(c.id)}</button></li>`).join('');
+    }
+    function init() {
+      document.documentElement.classList.remove('no-js');
+      loadPersistedLibrary();
+      ensureToolsState();
+      renderHeaderActions();
+      renderFooterCategories();
+      setupScrollProgress();
+      navigateTo('home');
+      // Кнопка «Escape» закрывает оверлей или модалку
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          const overlay = document.getElementById('space-overlay');
+          if (overlay && overlay.classList.contains('is-open')) { closeSpace(); return; }
+          closeModal();
+        }
+      });
+    }
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>
