@@ -758,37 +758,53 @@
 
     /* ============ 6. АНИМАЦИИ ============ */
     let revealObserver = null;
+    let revealMutationObserver = null;
     function initRevealObserver() {
+      const root = document.getElementById('app-root');
+      if (root && !revealMutationObserver && 'MutationObserver' in window) {
+        revealMutationObserver = new MutationObserver((mutations) => {
+          const hasAddedContent = mutations.some(mutation => Array.from(mutation.addedNodes).some(node =>
+            node.nodeType === 1 && (node.matches('[data-reveal]') || node.querySelector('[data-reveal]'))
+          ));
+          if (hasAddedContent) requestAnimationFrame(() => initRevealObserver());
+        });
+        revealMutationObserver.observe(root, { childList: true, subtree: true });
+      }
       if (revealObserver) revealObserver.disconnect();
-      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      const revealItems = document.querySelectorAll('[data-reveal]:not(.is-revealed)');
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || !('IntersectionObserver' in window)) {
         document.querySelectorAll('[data-reveal]').forEach(el => el.classList.add('is-revealed'));
         return;
       }
-      revealObserver = new IntersectionObserver((entries) => {
+      if (!revealItems.length) return;
+      revealObserver = new IntersectionObserver((entries, observer) => {
         entries.forEach(entry => {
           if (entry.isIntersecting) {
             entry.target.classList.add('is-revealed');
-            revealObserver.unobserve(entry.target);
+            observer.unobserve(entry.target);
           }
         });
       }, { threshold: 0.12, rootMargin: '0px 0px -60px 0px' });
-      document.querySelectorAll('[data-reveal]:not(.is-revealed)').forEach(el => revealObserver.observe(el));
+      revealItems.forEach(el => revealObserver.observe(el));
     }
     function markReveal(el, delay) {
       if (!el) return '';
       return `data-reveal ${delay ? `data-reveal-delay="${delay}"` : ''}`;
     }
-    function setupScrollProgress() {
+    function updateScrollProgress() {
       const bar = document.getElementById('scroll-hairline-bar');
       if (!bar) return;
-      const update = () => {
-        const h = document.documentElement;
-        const max = h.scrollHeight - h.clientHeight;
-        const p = max > 0 ? Math.min(100, (h.scrollTop / max) * 100) : 0;
-        bar.style.setProperty('--scroll-progress', p + '%');
-      };
-      window.addEventListener('scroll', update, { passive: true });
-      update();
+      const h = document.documentElement;
+      const max = h.scrollHeight - h.clientHeight;
+      const p = max > 0 ? Math.min(100, (h.scrollTop / max) * 100) : 0;
+      bar.style.setProperty('--scroll-progress', p + '%');
+    }
+    function setupScrollProgress() {
+      if (!window.__restohubScrollProgressBound) {
+        window.addEventListener('scroll', updateScrollProgress, { passive: true });
+        window.__restohubScrollProgressBound = true;
+      }
+      updateScrollProgress();
     }
 
     /* ============ 7. НАВИГАЦИЯ ============ */
@@ -1161,7 +1177,7 @@
           <div class="mt-10 grid lg:grid-cols-12 gap-10">
             <aside class="lg:col-span-3">
               <div data-reveal class="hairline-all p-5 space-y-5 lg:sticky lg:top-28">
-                <div><label class="tool-label">Поиск</label><input class="tool-input" value="${escapeHtml(f.search)}" placeholder="Название, тема, автор" oninput="AppState.filters.search=this.value; renderCatalog()"></div>
+                <div><label class="tool-label" for="catalog-search">Поиск</label><input id="catalog-search" class="tool-input" value="${escapeHtml(f.search)}" placeholder="Название, тема, автор" oninput="updateCatalogSearch(this)"></div>
                 <div><label class="tool-label">Направление</label>
                   <select class="tool-input" onchange="setFilter('category', this.value)">
                     <option value="ALL">Все направления</option>
@@ -1189,18 +1205,29 @@
             </aside>
             <div class="lg:col-span-9">
               <div class="flex items-baseline justify-between hairline-b pb-3 mb-6">
-                <div class="text-[10px] uppercase tracking-[0.18em] text-ink-subtle">Найдено: ${items.length}</div>
+                <div id="catalog-result-count" class="text-[10px] uppercase tracking-[0.18em] text-ink-subtle">Найдено: ${items.length}</div>
                 <button type="button" onclick="resetCatalogFilters()" class="text-[10px] uppercase tracking-[0.16em] text-ink-subtle hover:text-wine">Сбросить</button>
               </div>
-              ${items.length === 0 ? `<div class="text-sm text-ink-muted py-10">По вашим фильтрам ничего не найдено.</div>` : `
-                <div class="grid sm:grid-cols-2 gap-x-10 gap-y-14">
-                  ${items.map((m, i) => renderMaterialCard(m, i % 4 + 1)).join('')}
-                </div>
-              `}
+              <div id="catalog-results">${renderCatalogResults(items)}</div>
             </div>
           </div>
         </section>
       `;
+    }
+
+    function renderCatalogResults(items) {
+      if (!items.length) return '<div class="text-sm text-ink-muted py-10">По вашим фильтрам ничего не найдено.</div>';
+      return `<div class="grid sm:grid-cols-2 gap-x-10 gap-y-14">${items.map((m, i) => renderMaterialCard(m, i % 4 + 1)).join('')}</div>`;
+    }
+    function updateCatalogSearch(input) {
+      AppState.filters.search = input.value;
+      const count = document.getElementById('catalog-result-count');
+      const results = document.getElementById('catalog-results');
+      if (!count || !results) return;
+      const items = getFilteredMaterials();
+      count.textContent = `Найдено: ${items.length}`;
+      results.innerHTML = renderCatalogResults(items);
+      requestAnimationFrame(() => initRevealObserver());
     }
 
     /* ============ 13. СТАТЬЯ ============ */
